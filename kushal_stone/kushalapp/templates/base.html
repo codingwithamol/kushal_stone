@@ -1,0 +1,49 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Kushal Stone{% endblock %}</title>
+    <style>
+        /* Base styles */
+       
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <div style="display: flex; align-items: center;">
+            <!-- Logo with a static file -->
+            
+            <h1>Kushal Stone</h1>
+        </div>
+        <div>
+            <a href="/">Home</a>
+            
+            
+            <!-- Dropdown for User Links -->
+            <div class="dropdown">
+                <!-- <button class="dropbtn">Account</button>
+                <div class="dropdown-content">
+                    <a href="/accounts/profile">Profile</a>
+                    <a href="/accounts/signup">Signup</a>
+                    <a href="/accounts/login">Login</a>
+                </div> -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025. All rights reserved.</p>
+    </footer>
+</body>
+</html>
