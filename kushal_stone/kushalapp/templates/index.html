@@ -1,11 +1,5 @@
-{% extends "base.html" %}
-
-{% block title %}Kushal Stone{% endblock %}
-
+{% extends 'base.html' %}
 {% block content %}
-
-
-
-<h1>This is the Index Page</h1>
-
+<h1>Welcome to Kushal Stone CRM</h1>
+<a href="{% url 'signup' %}">Signup</a> | <a href="{% url 'login' %}">Login</a>
 {% endblock %}
