@@ -1,19 +1,19 @@
 {%load static%}
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Document</title>
 </head>
-
 <body>
-   
-    <h1>Welcome to Kushal Stone CRM</h1>
-    <a href="{% url 'signup' %}">Signup</a> | <a href="{% url 'login' %}">Login</a>
-    {%include 'footer.html'%}
-</body>
 
+    {% include 'Admin_Base.html' %}
+    <div class="main">
+
+    <h1 class=" ">Welcome to Kushal Stone CRM</h1>
+<a href="{% url 'signup' %}">Signup</a> | <a href="{% url 'login' %}">Login</a>
+ 
+</div>
+</body>
 </html>
