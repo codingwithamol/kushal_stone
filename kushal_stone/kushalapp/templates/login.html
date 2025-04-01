@@ -1,3 +1,151 @@
+<<<<<<< HEAD
+{%load static%}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <title>Login</title>
+    <style>
+        .login-container {
+            margin-top: 5%;
+            margin-bottom: 5%;
+        }
+
+        .login-form-1 {
+            padding: 5%;
+            /* box-shadow: 0 5px 8px 0 rgba(0, 0, 0, 0.2), 0 9px 26px 0 rgba(0, 0, 0, 0.19); */
+        }
+
+        .login-form-1 h3 {
+            text-align: center;
+            color: #333;
+        }
+
+
+
+        .login-container form {
+            padding: 10%;
+        }
+
+
+        .row {
+            box-shadow: 0 5px 8px 0 rgba(0, 0, 0, 0.2), 0 9px 26px 0 rgba(0, 0, 0, 0.19);
+            border-radius: 25px;
+            overflow: hidden;
+            margin: 10px;
+        }
+
+        .bg-img {
+            background-image: url("{% static 'images/login.jpg' %}");
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+
+        @media (max-width:768px) {
+            .bg-img {
+                display: none;
+                /* height: 300px; */
+            }
+
+        }
+
+        .form-control {
+            border-radius: 25px;
+        }
+
+        /* From Uiverse.io by shah1345 */
+        button {
+            width: 100%;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1.5em;
+        }
+
+        button:hover {
+            background: linear-gradient(to right, #2575fc, #6a11cb);
+            transform: scale(1);
+            box-shadow: 0 10px 10px rgba(106, 17, 203, 0.5);
+        }
+
+
+
+        .login-form-1 {
+            background: linear-gradient(to right, rgba(106, 17, 203, 0.05), rgba(22, 29, 41, 0.05));
+            backdrop-filter: blur(px);
+            /* Optional: Light blur effect */
+            padding: 20px;
+            /* border-radius: 10px; Optional: Soft rounded edges */
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Display Messages -->
+    {% if messages %}
+    <div>
+        {% for message in messages %}
+        <!-- <p style="color: {% if message.tags == 'success' %}green{% else %}red{% endif %};">
+            {{ message }}
+        </p> -->
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Login Form -->
+    <div class="main">
+        <div class="container  login-container">
+            <div class="row">
+                <!-- <form method="post">
+                    {% csrf_token %}
+                    <input type="text" name="username" placeholder="Username" required>
+                    <input type="password" name="password" placeholder="Password" required>
+                    <button type="submit">Login</button>
+                    </form> -->
+                <div class="col-md-6 col-12 login-form-1">
+                    <h3>Login</h3>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label>User Name</label>
+                            <input type="text" class="form-control" name="username" placeholder="Username" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input class="form-control" type="password" name="password" placeholder="Password"
+                                required />
+                        </div>
+                        <div class="form-group">
+                            <!-- From Uiverse.io by shah1345 -->
+                            <button class="" type="submit" value="Login">Login</button>
+
+                            <!-- <input type="submit" class="btnSubmit" value="Login" /> -->
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-6 col-12 bg-img">
+                    <!-- <img class="login-img" src="{% static 'images/login.jpg' %}" alt="gf"> -->
+                </div>
+            </div>
+
+        </div>
+    </div>
+    </div>
+    {%include 'footer.html'%}
+</body>
+
+=======
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,4 +175,5 @@
 </form>
 
 </body>
+>>>>>>> 0086283614fe3d179cc5828be3a896e1aade966c
 </html>
