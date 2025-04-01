@@ -76,7 +76,7 @@
       box-shadow: 2px 0px 10px rgba(101, 117, 255, 0.984);
       border-radius: 1px !important;
       /* Optional for better aesthetics */
-      margin-top: 6%;
+      margin-top: 5%;
       z-index: auto;
     }
 
@@ -595,7 +595,7 @@ padding-top:40px ;
     .imgg {
       height: 50px;
       margin-bottom: 0px;
-      margin-right: 30px;
+      margin-right: 2px;
       border-radius: 50%;
       box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
       /* 3D floating effect */
@@ -861,6 +861,105 @@ padding-top:40px ;
 .main{
   min-height: 100vh;
 }
+
+/* From Uiverse.io by JustCode14 */ 
+/* Theme Switch */
+/* The switch - the box around the slider */
+.switch {
+  font-size: 14px; /* थोडा लहान आकार */
+  position: relative;
+  display: inline-block;
+  width: 3em;
+  height: 1.5em;
+  border-radius: 30px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #2a2a2a;
+  transition: 0.4s;
+  border-radius: 30px;
+  overflow: hidden;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 0.9em;
+  width: 0.9em;
+  border-radius: 20px;
+  left: 0.4em;
+  bottom: 0.3em;
+  transition: 0.4s;
+  transition-timing-function: cubic-bezier(0.81, -0.04, 0.38, 1.5);
+  box-shadow: inset 6px -3px 0px 0px #fff;
+}
+
+.switch input:checked + .slider {
+  background-color: #00a6ff;
+}
+
+.switch input:checked + .slider:before {
+  transform: translateX(1.2em);
+  box-shadow: inset 12px -3px 0px 10px #ffcf48;
+}
+
+/* लहान स्टार */
+.star {
+  background-color: #fff;
+  border-radius: 50%;
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  transition: all 0.4s;
+}
+
+.star_1 {
+  left: 2em;
+  top: 0.4em;
+}
+
+.star_2 {
+  left: 1.8em;
+  top: 1em;
+}
+
+.star_3 {
+  left: 2.5em;
+  top: 0.7em;
+}
+
+.switch input:checked ~ .slider .star {
+  opacity: 0;
+}
+
+/* लहान ढग */
+.cloud {
+  width: 2.5em;
+  position: absolute;
+  bottom: -1em;
+  left: -0.8em;
+  opacity: 0;
+  transition: all 0.4s;
+}
+
+.switch input:checked ~ .slider .cloud {
+  opacity: 1;
+}
+
+
   </style>
 </head>
 
@@ -886,7 +985,7 @@ padding-top:40px ;
         modeEmoji.innerHTML = "🌙"; // Show Moon in dark mode
       } else {
         localStorage.setItem("darkMode", "disabled");
-        modeEmoji.innerHTML = "🌞"; // Show Sun in light mode
+        modeEmoji.innerHTML = "🔆"; // Show Sun in light mode
       }
     }
   </script>
@@ -910,12 +1009,26 @@ padding-top:40px ;
           alt="Logo" class="imgg" style="height: 50px;   margin-bottom: 8px; ">
       </a>
     </div>
-    <button class="toggle-btn " onclick="toggleDarkMode()" style="background-color: transparent;  position: fixed;
-           top: 4px;
-    right: -13px;
- font-size:30px">
-      <span id="modeEmoji">🌞</span>
-    </button>
+   
+
+
+    <!-- From Uiverse.io by JustCode14 --> 
+<label class="switch toggle-btn"  style="position: fixed; right:80px; top:15px;">
+  <input checked="true" id="checkbox" onclick="toggleDarkMode()" type="checkbox" />
+  <span class="slider">
+    <div class="star star_1"></div>
+    <div class="star star_2"></div>
+    <div class="star star_3"></div>
+    <svg viewBox="0 0 16 16" class="cloud_1 cloud">
+      <path
+        transform="matrix(.77976 0 0 .78395-299.99-418.63)"
+        fill="#fff"
+        d="m391.84 540.91c-.421-.329-.949-.524-1.523-.524-1.351 0-2.451 1.084-2.485 2.435-1.395.526-2.388 1.88-2.388 3.466 0 1.874 1.385 3.423 3.182 3.667v.034h12.73v-.006c1.775-.104 3.182-1.584 3.182-3.395 0-1.747-1.309-3.186-2.994-3.379.007-.106.011-.214.011-.322 0-2.707-2.271-4.901-5.072-4.901-2.073 0-3.856 1.202-4.643 2.925"
+      ></path>
+    </svg>
+  </span>
+</label>
+
   </div>
 
   <div class="sidebar ">
