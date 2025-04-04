@@ -1,4 +1,3 @@
-
 {%load static%}
 
 <!DOCTYPE html>
@@ -11,6 +10,348 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <title>Signup</title>
     <style>
+         /* header css */
+       body {
+      background-color: #f2eefc !important;
+      color: #F4F4F5 !important;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #FFFFFF;
+      color: rgb(0, 0, 0);
+      position: fixed;
+      width: 100%;
+      z-index: 1000;
+      position: fixed;
+      top: 0%;
+      box-shadow: 0px 5px 5px rgb(169, 169, 169);
+      padding: 8px;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease-in-out;
+
+    }
+
+    /* Hover Effect */
+    .header:hover {
+      box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.3);
+      transform: translateY(-2px);
+      /* Subtle Lift */
+    }
+
+    /* Optional Gradient Effect */
+    .header::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+    }
+
+    .header .colaps_icon {
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+
+
+    .logo {
+      text-align: center;
+      margin-bottom: 10px;
+      /* Reduced bottom margin */
+      padding: 0;
+      /* Remove any padding */
+    }
+
+    .logo img {
+      max-width: 70%;
+      /* Ensure the logo size is consistent */
+      height: auto;
+      display: block;
+      margin: 0 auto;
+      /* Center the logo horizontally */
+    }
+
+
+
+    @media (max-width: 768px) {
+
+      .header {
+        padding: 10px;
+      }
+
+      .navbar-header_logo {
+        height: 80px !important;
+      }
+
+    }
+
+
+
+
+
+
+ 
+    .navbar-header_logo {
+      position: absolute;
+      left: 50px;
+      top: 25px;
+    }
+
+
+
+    .colaps_icon:hover {
+      color: #AA33F6;
+      text-shadow: 0px 0px 5px#73627d;
+    }
+
+    .tem {
+
+      border-radius: 50%;
+      background-color: color(srgb red green blue);
+    }
+
+
+
+
+
+
+    .imgg {
+      height: 50px;
+      margin-bottom: 0px;
+      margin-right: 2px;
+      border-radius: 50%;
+      box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+      /* 3D floating effect */
+      transform: scale(1);
+      transition: transform 0.3s ease-in-out;
+    }
+
+    .imgg:hover {
+      transform: scale(1.1);
+      /* Slight zoom effect for more 3D feel */
+    }
+
+
+    /* Dark Mode */
+    .dark-mode {
+      background: #98a9a9;
+      /* Dark background */
+      color: white !important;
+    }
+
+    .dark-mode .sidebar {
+      background: #3a3a3a;
+      /* Dark background */
+    }
+
+    .dark-mode .sidebar a {
+      color: white !important;
+      /* Text color in dark mode */
+    }
+
+    .dark-mode .sidebar a:hover {
+      background: #98a9a9;
+      /* Dark background */
+      color: white;
+    }
+
+    .dark-mode .toggle-btn {
+      background: #555;
+      color: white;
+    }
+
+    /* Header Styling */
+    .header {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      background: white;
+      /* Default light mode */
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .colaps_icon {
+      cursor: pointer;
+      font-size: 24px;
+      color: black;
+      transition: color 0.3s;
+    }
+
+    .navbar-header {
+      display: flex;
+      align-items: center;
+    }
+
+    .navbar-header_logo {
+      color: #1C144D;
+      font-weight: 700;
+    }
+
+    .imgg {
+      height: 50px;
+      margin-bottom: 8px;
+    }
+
+    /* Dark Mode for Header */
+    .dark-mode .header {
+      background: #3a3a3a;
+      /* Dark background */
+      color: white;
+    }
+
+    .dark-mode .colaps_icon {
+      color: white;
+    }
+
+    .dark-mode .navbar-header_logo {
+      color: white !important;
+    }
+
+    .dark-mode .imgg {
+      filter: brightness(1);
+      box-shadow: inset 0px 0px 50px white;
+      /* Adjust brightness in dark mode */
+    }
+
+    .imgg {
+      filter: brightness(1);
+      box-shadow: inset 0px 0px 50px rgb(75, 75, 75);
+      /* Adjust brightness in dark mode */
+    }
+
+    /* Main Section Styling */
+    .main {
+      min-height: 100vh;
+      background: white;
+      /* Default light mode */
+      color: black;
+      padding: 20px;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .dark-mode .main {
+      background: #767676;
+      /* Dark background */
+      color: white;
+
+    }
+
+
+ 
+
+    .main {
+      min-height: 100vh;
+      margin-top: 5%;
+    }
+
+    /* From Uiverse.io by JustCode14 */
+    /* Theme Switch */
+    /* The switch - the box around the slider */
+    .switch {
+      margin-top: 10px;
+      font-size: 20px;
+      /* थोडा लहान आकार */
+      position: relative;
+      display: inline-block;
+      width: 3em;
+      height: 1.5em;
+      border-radius: 30px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #2a2a2a;
+      transition: 0.4s;
+      border-radius: 30px;
+      overflow: hidden;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 0.9em;
+      width: 0.9em;
+      border-radius: 20px;
+      left: 0.4em;
+      bottom: 0.3em;
+      transition: 0.4s;
+      transition-timing-function: cubic-bezier(0.81, -0.04, 0.38, 1.5);
+      box-shadow: inset 6px -3px 0px 0px #fff;
+    }
+
+    .switch input:checked+.slider {
+      background-color: #00a6ff;
+    }
+
+    .switch input:checked+.slider:before {
+      transform: translateX(1.2em);
+      box-shadow: inset 12px -3px 0px 10px #ffcf48;
+    }
+
+    /* लहान स्टार */
+    .star {
+      background-color: #fff;
+      border-radius: 50%;
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      transition: all 0.4s;
+    }
+
+    .star_1 {
+      left: 2em;
+      top: 0.4em;
+    }
+
+    .star_2 {
+      left: 1.8em;
+      top: 1em;
+    }
+
+    .star_3 {
+      left: 2.5em;
+      top: 0.7em;
+    }
+
+    .switch input:checked~.slider .star {
+      opacity: 0;
+    }
+
+    /* लहान ढग */
+    .cloud {
+      width: 2.5em;
+      position: absolute;
+      bottom: -1em;
+      left: -0.8em;
+      opacity: 0;
+      transition: all 0.4s;
+    }
+
+    .switch input:checked~.slider .cloud {
+      opacity: 1;
+    }
+
+
+
+        /* Signup Css */
         .signup-container {
             margin-top: 5%;
             margin-bottom: 5%;
@@ -33,7 +374,7 @@
         }
 
 
-        .row {
+        .row-signup {
             box-shadow: 0 5px 8px 0 rgba(0, 0, 0, 0.2), 0 9px 26px 0 rgba(0, 0, 0, 0.19);
             border-radius: 25px;
             overflow: hidden;
@@ -55,7 +396,7 @@
         }
 
         .form-control {
-            border-radius: 25px;
+            border-radius: 25px !important;
         }
 
         /* From Uiverse.io by shah1345 */
@@ -65,12 +406,12 @@
             color: #fff;
             padding: 10px 20px;
             border: none;
-            border-radius: 25px;
+            border-radius: 25px !important;
             font-size: 1rem;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-top: 1.5em;
+            margin-top: 1.5em !important;
         }
 
         button:hover {
@@ -88,13 +429,67 @@
             padding: 20px;
             /* border-radius: 10px; Optional: Soft rounded edges */
         }
+        .footer-row
+        {
+          transition: background 0.3s, color 0.3s;
+    
+        }
+        .dark-mode .footer-row {
+          background: #767676;
+          /* Dark background */
+          color: white;
+    
+        }
     </style>
 
 </head>
 <body>
+
+    <div class="header" style="width: 100%;">
+        <div class="colaps_icon" id="colaps_icon">
+          <i class="fas fa-bars"></i>
+        </div>
+    
+        <div class="navbar-header ">
+          <a class="navbar-brand " href="#">
+            <span class="navbar-header_logo" style="color: #1C144D; font-waight: 700px;">
+              Kushal Stone
+            </span>
+            <!-- <img src="{% static 'images/Logo.webp' %}" alt="Logo" style="height: 90px;   margin-bottom: 5px; " class="navbar-header_logo"> -->
+          </a>
+        </div>
+        <div class="navbar-header tem">
+          <a class="navbar-brand " href="https://chronoanalytics.in/">
+            <img
+              src="https://png.pngtree.com/png-clipart/20240316/original/pngtree-man-profile-account-picture-character-png-image_14599291.png"
+              alt="Logo" class="imgg" style="height: 50px;   margin-bottom: 8px; ">
+          </a>
+        </div>
+       
+    
+    
+        <!-- From Uiverse.io by JustCode14 --> 
+    <label class="switch toggle-btn"  style="position: fixed; right:100px; top:15px;">
+      <input checked="true" id="checkbox" onclick="toggleDarkMode()" type="checkbox" />
+      <span class="slider">
+        <div class="star star_1"></div>
+        <div class="star star_2"></div>
+        <div class="star star_3"></div>
+        <svg viewBox="0 0 16 16" class="cloud_1 cloud">
+          <path
+            transform="matrix(.77976 0 0 .78395-299.99-418.63)"
+            fill="#fff"
+            d="m391.84 540.91c-.421-.329-.949-.524-1.523-.524-1.351 0-2.451 1.084-2.485 2.435-1.395.526-2.388 1.88-2.388 3.466 0 1.874 1.385 3.423 3.182 3.667v.034h12.73v-.006c1.775-.104 3.182-1.584 3.182-3.395 0-1.747-1.309-3.186-2.994-3.379.007-.106.011-.214.011-.322 0-2.707-2.271-4.901-5.072-4.901-2.073 0-3.856 1.202-4.643 2.925"
+          ></path>
+        </svg>
+      </span>
+    </label>
+    
+      </div>
+
     <div class="main">
         <div class="container signup-container">
-           <div class="row">
+           <div class="row row-signup">
             <div class="col-md-6 col-12 bg-img">
 
             </div>
@@ -117,7 +512,7 @@
                     </div>
                     <div class="form-group">
                         <label>Confirm Password</label>
-                        <input class="form-control" type="password" name="password" placeholder="Password" required />
+                        <input class="form-control" type="password" name="confirm_password" placeholder="Password" required />
                     </div>
                     <div class="form-group">
                         <button class="" type="submit">Signup</button>
@@ -136,7 +531,32 @@
         </div>
     </div>
     {%include 'footer.html'%}
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          const modeEmoji = document.getElementById("modeEmoji");
+    
+          // Check user preference in localStorage
+          if (localStorage.getItem("darkMode") === "enabled") {
+            document.body.classList.add("dark-mode");
+            modeEmoji.innerHTML = "🌙"; // Show Moon in dark mode
+          }
+        });
+    
+        function toggleDarkMode() {
+          const modeEmoji = document.getElementById("modeEmoji");
+          document.body.classList.toggle("dark-mode");
+    
+          // Toggle emoji based on mode
+          if (document.body.classList.contains("dark-mode")) {
+            localStorage.setItem("darkMode", "enabled");
+            modeEmoji.innerHTML = "🌙"; // Show Moon in dark mode
+          } else {
+            localStorage.setItem("darkMode", "disabled");
+            modeEmoji.innerHTML = "🔆"; // Show Sun in light mode
+          }
+        }
+      </script>
 </body>
 
 </html>
-

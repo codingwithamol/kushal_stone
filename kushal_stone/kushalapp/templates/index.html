@@ -15,6 +15,8 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 
+    <link rel='stylesheet' href='https://unpkg.com/aos@2.3.0/dist/aos.css'>
+
     <style>
         /* General body styling */
         body {
@@ -95,6 +97,9 @@
         /*Footer Css Start*/
         @media screen and (max-width: 768px) {
 
+.backgroundimg{
+  display: none;
+}
 
             .teimlms {
 
@@ -116,21 +121,50 @@
 
                 margin-left: -24px;
             }
+            .main{
+              margin-top: 80px !important;
+              margin-bottom: 200px;
+              min-height: 100vh;
+
+           
+           }
+           cantent-div{
+            margin-top: 30px !important;
+
+
+           }
+           .buttons2{
+            display: none;
+           }
+         
         }
-
-
-        .bg-img{
-            background-image: url("{% static 'images/login.jpg' %}");
-            height: 70vh;
-            background-size: cover;
-            background-repeat: no-repeat;
-            overflow: hidden;
-            border-radius: 10px;
-
+        @media screen and (min-width: 768px) {
+          .buttons{
+            display: none;
+          }
         }
-
+        .buttons{
+          margin-top: 0px !important;
+        }
+       
+        .backgroundimg {
+          height: 75vh;
+          background-image: url("{% static 'images/login.jpg' %}");
+          background-size: cover;
+          background-repeat: no-repeat;
+          overflow: hidden;
+          border-top-right-radius: 10px;
+          border-bottom-right-radius: 10px;
+          transition: transform 0.5s ease, filter 0.5s ease; /* Smooth transition */
+      }
+      
+      .backgroundimg:hover {
+          transform: scale(1.02);  
+          filter: brightness(0.8); /*   */
+      }
+      
         .main{
-            margin-top: 150px;
+            margin-top: 110px;
             min-height: 100vh;
         }
         .heading{
@@ -140,14 +174,13 @@
         /* From Uiverse.io by neerajbaniwal */ 
 .btn-shine {
     
-   
-    transform: translate(-50%, -50%);
-     color: #fff;
-    background: linear-gradient(to right, #9f9f9f 0, #fff 10%, #868686 20%);
-    background-position: 0;
+     transform: translate(-50%, -50%);
+     color: #fff !important;
+     background: linear-gradient(to right,    #b1ceff, #6a11cb);
+     background-position: 0;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: shine 3s infinite linear;
+    animation: shine 7s infinite linear;
     animation-fill-mode: forwards;
     -webkit-text-size-adjust: none;
     font-weight: 600;
@@ -161,10 +194,10 @@
       background-position: 0;
     }
     60% {
-      background-position: 310px;
+      background-position: 256px;
     }
     100% {
-      background-position: 310px;
+      background-position: 256px;
     }
   }
   @-webkit-keyframes shine {
@@ -172,10 +205,10 @@
       background-position: 0;
     }
     60% {
-      background-position: 310px;
+      background-position: 256px;
     }
     100% {
-      background-position: 310px;
+      background-position: 256px;
     }
   }
   @-o-keyframes shine {
@@ -183,10 +216,10 @@
       background-position: 0;
     }
     60% {
-      background-position: 310px;
+      background-position: 256px;
     }
     100% {
-      background-position: 310px;
+      background-position: 256px;
     }
   }
   @keyframes shine {
@@ -194,16 +227,111 @@
       background-position: 0;
     }
     60% {
-        background-position: 310px;
+        background-position: 256px;
     }
     100% {
-      background-position: 310px;
+      background-position: 256px;
     }
   }
   
-        
+  .cantent-div{
+    box-shadow:inset 0px 0px 35px rgb(255, 255, 255);
+    border: none;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+   }
+   .cantent-div:hover{
+    filter: brightness(0.9); /* Darken the image a bit */
+
+
+   }
+  .rowmain{
+    height: 60vh;
+
+
+  }
+  .p {
+ 
+     
+     /*background: linear-gradient(45deg, #ff8c00, #ff0080);   */
+      display: inline-block;
+      transition: transform 0.5s ease, filter 0.5s ease; /* Smooth transition */
+
+}
+.p:hover {
+   text-shadow: 3px 3px 5px rgba(205, 205, 205, 0.5), 
+              -2px -2px 4px rgba(254, 254, 254, 0.3); /* 3D shadow effect */
+  /*background: linear-gradient(45deg, #ff8c00, #ff0080);   */
+   display: inline-block;
+   transform: scale(1.01); /* Slightly increase the size */
+   filter: brightness(0.1); /* Darken the image a bit */
+}
+ /* Button styling */
+ button {
+  background: linear-gradient(to right, #017123, #044e13);
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 25px;
+  font-size: 1rem;
+  font-weight: 900;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1.5em;
+  width: 100%;
+  display: inline-block;
+}
+
+.signbut {
+  background: linear-gradient(to right, #2575fc, #6a11cb);
+
+
+}
+
+.signbut:hover {
+  background: linear-gradient(to right, #2575fc, #6a11cb);
+  transform: scale(1.02);
+}
+
+button:hover {
+  background: linear-gradient(to right, #017123, #1cb149);
+  transform: scale(1.02);
+}
+/* Preloader Styles */
+#preloader {
+    position: fixed;
+    width: 100%;
+    height: 100vh;
+    background: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+/* Spinner Animation */
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(118, 100, 100, 0.1);
+    border-top-color:rgb(3, 139, 230);
+    border-radius: 50%;
+    animation: spin 5s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+     
     </style>
 </head>
+<script>
+  window.addEventListener("load", function() {
+      document.getElementById("preloader").style.display = "none";
+      AOS.init(); // Initialize AOS after preloader hides
+  });
+</script>
 
 <body>
     <nav class="navbar navbar-default p-4 ">
@@ -243,20 +371,60 @@
         </div>
     </nav>
 
-   
+   <!-- AOS JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+<script>
+  AOS.init(); // Initialize AOS
+</script>
+<!-- Preloader -->
+<div id="preloader">
+  <div class="spinner"></div>
+</div>
+
    <div class="container main" >
-    <div class="row">
-        <div class="col-md-6 col-12 mt-5 ">
-            <a href="#" class="btn-shine" >Welcome To CRM System...!</a>
+    <div class="row rowmain">
+        <div class="col-md-6 col-12  cantent-div" data-aos="fade-right">
+          <div class="row mt-5 buttons" >
+
+            <div class="col-md-6 col-6">
+                <a href="/login/"><button>Login</button></a>
+  
+            </div>
+            <div class="col-md-16 col-6">
+  
+                <a href="/signup/"><button class="signbut">Sign Up</button></a>
+            </div>
         </div>
-        <div class="col-md-6 col-12 bg-img">
+         <div class="mt-1 p-4">
+          <a href="#" class="btn-shine  " >Welcome To CRM ...!</a>
+          <br><br>
+          <h6>Streamline Your Business with TeimCRM – The Ultimate CRM Solution
+       </h6>
+          <p class="p">
+            TeimCRM (teimcrm.com) is a Customer Relationship Management (CRM) system that helps businesses manage customer interactions and automate workflows. It offers features like lead tracking, sales automation, and task management with a user-friendly interface. By centralizing customer data, TeimCRM boosts productivity and enhances business efficiency.
+          </p>
+          <div class="row mt-5 buttons2 " >
+
+            <div class="col-md-6 col-6">
+                <a href="/login/"><button>Login</button></a>
+  
+            </div>
+            <div class="col-md-16 col-6">
+  
+                <a href="/signup/"><button class="signbut">Sign Up</button></a>
+            </div>
+        </div>
+         </div>
+        
+        </div>
+        <div class="col-md-6 col-12 backgroundimg  " data-aos="fade-left"  >
 
         </div>
     </div>
     
    </div>
-   
-  
+   {%include 'footer.html'%}
+
 </body>
 
 </html>
