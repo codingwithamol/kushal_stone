@@ -10,15 +10,7 @@
 <body>
 
     {% include 'Admin_Base.html' %}
-    <div class="main">
-        <h1>Admin Dashboard</h1>
-        <a href="{% url 'create_user' %}">Create User</a>
-
-        <form action="{% url 'logout' %}" method="post">
-            {% csrf_token %}
-            <button type="submit">Logout</button>
-        </form>
-    </div>
+    
 </body>
 
 </html>
