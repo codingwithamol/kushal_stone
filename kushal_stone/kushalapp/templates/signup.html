@@ -9,6 +9,8 @@
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <title>Signup</title>
+    <link rel='stylesheet' href='https://unpkg.com/aos@2.3.0/dist/aos.css'>
+
     <style>
          /* header css */
        body {
@@ -85,7 +87,21 @@
 
       .navbar-header_logo {
         height: 80px !important;
+        left: 5px !important;
       }
+
+
+      .imgg {
+        height: 50px;
+        margin-bottom: 0px;
+        margin-right: -20px !important;
+        border-radius: 50%;
+        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+        /* 3D floating effect */
+        transform: scale(1);
+        transition: transform 0.3s ease-in-out;
+      }
+  
 
     }
 
@@ -392,6 +408,12 @@
                 display: none;
                 /* height: 300px; */
             }
+            .row-signup{
+              margin-top: 80px !important;
+            }
+            .switch{
+              right: 70px !important;
+            }
 
         }
 
@@ -445,13 +467,13 @@
 </head>
 <body>
 
-    <div class="header" style="width: 100%;">
+    <div class="header" style="width: 100%;" data-aos="fade-down">
         <div class="colaps_icon" id="colaps_icon">
           <i class="fas fa-bars"></i>
         </div>
     
         <div class="navbar-header ">
-          <a class="navbar-brand " href="#">
+          <a class="navbar-brand " href="https://www.kushalstone.com/" target="_blank">
             <span class="navbar-header_logo" style="color: #1C144D; font-waight: 700px;">
               Kushal Stone
             </span>
@@ -489,11 +511,11 @@
 
     <div class="main">
         <div class="container signup-container">
-           <div class="row row-signup">
-            <div class="col-md-6 col-12 bg-img">
+           <div class="row row-signup " >
+            <div class="col-md-6 col-12 bg-img" data-aos="fade-right">
 
             </div>
-            <div class="col-md-6 col-12 signup-form">
+            <div class="col-md-6 col-12 signup-form" data-aos="fade-left">
                 <h3>Signup</h3>
                 <form method="post">
                     {% csrf_token %}
@@ -531,7 +553,10 @@
         </div>
     </div>
     {%include 'footer.html'%}
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>
+      AOS.init(); // Initialize AOS
+    </script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
           const modeEmoji = document.getElementById("modeEmoji");

@@ -1,17 +1,41 @@
+{% load static%}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Welcome To Manager Dashboard</title>
+    <style>
+        .headingrow{
+            margin-top: 78px !important;
+             
+        }
+        .subhaiding{
+            background: linear-gradient(to right,  #6a11cb,    #6a11cb);
+            background-position: 0;
+     -webkit-background-clip: text;
+     -webkit-text-fill-color: transparent;
+        }
+    </style>
 </head>
 <body>
-    <h2>Manager Dashboard</h2>
-<p>Welcome, {{ user.username }}! You are logged in as an Admin.</p>
 
-<form action="{% url 'logout' %}" method="post">
-    {% csrf_token %}
-    <button type="submit">Logout</button>
-</form>
+
+    {% include 'Manager_Base.html' %}
+    <div class="main" style="min-height: 100vh;">
+        <div class="container-fluid   ">
+            <div class="row  headingrow">
+                <div class="col-md-12 text-center">
+                    <p ><span class="text-info">Welcome</span>, <span class="subhaiding">{{ user.username }}</span> <span class="text-info">! You are logged in as an Admin.</span></p>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+    {%include 'footer.html'%}
+
+  
 </body>
 </html>

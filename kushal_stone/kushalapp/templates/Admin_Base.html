@@ -13,6 +13,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  <link rel='stylesheet' href='https://unpkg.com/aos@2.3.0/dist/aos.css'>
+
   <title>welcome To Admin Dashboard</title>
   <style>
     body {
@@ -122,9 +124,21 @@
       font-size: 25px;
       text-decoration: none;
       display: block;
-      padding: 2px;
-    }
+      padding: 10px;
+      border-radius: 10px;
+      padding-left: 20px;
+      transition: all 0.3s ease; /* Smooth transition for all properties */
+      padding-left: 10px;
+     }
+    
+    .sidebar ul li a:hover {
+      background-color: #f0f0f0; /* Light background on hover */
+      color: #007bff; /* Change text color on hover */
+      transform: translateX(5px); /* Slight slide to the right */
+      box-shadow: inset 0px 0px 10px rgb(255, 234, 234);
 
+    }
+    
     .sidebar ul li i {
       margin-right: 10px;
     }
@@ -147,6 +161,8 @@
       margin-top: 10px;
       padding-left: 20px;
       border-radius: 5px;
+      padding: 10px;
+      border-radius: 10px;
     }
 
     .submenu ul {
@@ -166,7 +182,8 @@
 
     .submenu ul li:hover {
        color: black;
-       padding: 5px;
+       padding: 10px;
+       border-radius: 10px !important;
       /* Slightly darker shade for hover */
     }
 
@@ -470,18 +487,16 @@ padding-top:40px ;
         /* Adjust content when sidebar is open */
       }
 
+      .headdingsalse{
+        display:none;
+      }
       .open-sidebar .bar-chart-container {
         margin-left: 300px;
         /* Adjust content when sidebar is open */
       }
     }
 
-    #contractTypeChart {
-      max-width: 500px;
-      max-height: 500px;
-      margin: 0 auto;
-      /* Center the chart */
-    }
+    
 
     .navbar-header_logo {
       position: absolute;
@@ -489,20 +504,10 @@ padding-top:40px ;
       top: 25px;
     }
 
-    h3 {
-      background: linear-gradient(to right, #2575fc, #6a11cb);
-      /* Gradient definition */
-      -webkit-background-clip: text;
-      /* Clip the gradient to the text boundaries */
-      -webkit-text-fill-color: transparent;
-      border-bottom: 1px solid rgb(80, 16, 177);
-      /*Script MT */
-      font-weight: 400;
-    }
+     
 
     label {
-      margin-top: 20px;
-      color: #3498db;
+       color: #3498db;
     }
 
     /* From Uiverse.io by satyamchaudharydev */
@@ -766,8 +771,7 @@ padding-top:40px ;
     }
 
     .dark-mode .sidebar a:hover {
-      background: #98a9a9;
-      /* Dark background */
+       /* Dark background */
       color: white;
     }
 
@@ -809,12 +813,16 @@ padding-top:40px ;
       height: 50px;
       margin-bottom: 8px;
     }
-
+    .dark-mode .logoutbtn2 a{
+      color:black !important;
+      background-color:none;
+    }
     /* Dark Mode for Header */
     .dark-mode .header {
       background: #3a3a3a;
       /* Dark background */
       color: white;
+      box-shadow: 0px 2px 1px rgb(62, 62, 62);
     }
 
     .dark-mode .colaps_icon {
@@ -1034,12 +1042,82 @@ padding-top:40px ;
 .switch input:checked ~ .slider .cloud {
   opacity: 1;
 }
+.headdingsalse{
+  position: fixed;
+  left: 50%;
+  top: 45px;
+  
+  }
+  /* From Uiverse.io by neerajbaniwal */ 
+  .btn-shine {
+      
+    transform: translate(-50%, -50%);
+    color: #fff !important;
+    background: linear-gradient(to left,black,rgb(197, 194, 194));
+    background-position: 0;
+   -webkit-background-clip: text;
+   -webkit-text-fill-color: transparent;
+   animation: shine 17s infinite linear;
+   animation-fill-mode: forwards;
+   -webkit-text-size-adjust: none;
+   font-weight: 600;
+    text-decoration: none;
+   white-space: nowrap;
+   font-family: "Poppins", sans-serif;
+  }
+  @-moz-keyframes shine {
+   0% {
+     background-position: 0;
+   }
+   60% {
+     background-position: 259px;
+   }
+   100% {
+     background-position: 259px;
+   }
+  }
+  @-webkit-keyframes shine {
+   0% {
+     background-position: 0;
+   }
+   60% {
+     background-position: 259px;
+   }
+   100% {
+     background-position: 259px;
+   }
+  }
+  @-o-keyframes shine {
+   0% {
+     background-position: 0;
+   }
+   60% {
+     background-position: 259px;
+   }
+   100% {
+     background-position: 259px;
+   }
+  }
+  @keyframes shine {
+   0% {
+     background-position: 0;
+   }
+   60% {
+       background-position: 259px;
+   }
+   100% {
+     background-position: 259px;
+   }
+  }
+  .submenu ul a li:hover{
+    padding: 5px;
 
-
+  }
   </style>
 </head>
 
 <body>
+
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       const modeEmoji = document.getElementById("modeEmoji");
@@ -1065,19 +1143,25 @@ padding-top:40px ;
       }
     }
   </script>
-  <div class="header" style="width: 100%;">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+<script>
+  AOS.init(); // Initialize AOS
+</script>
+  <div class="header" style="width: 100%;" data-aos="fade-down">
     <div class="colaps_icon" id="colaps_icon">
       <i class="fas fa-bars"></i>
     </div>
 
     <div class="navbar-header ">
-      <a class="navbar-brand " href="#">
+      <a class="navbar-brand " href="https://www.kushalstone.com/" target="_blank">
         <span class="navbar-header_logo" style="color: #1C144D; font-waight: 700px;">
           Kushal Stone
         </span>
         <!-- <img src="{% static 'images/Logo.webp' %}" alt="Logo" style="height: 90px;   margin-bottom: 5px; " class="navbar-header_logo"> -->
       </a>
     </div>
+    <span class="headdingsalse btn-shine " >Admin Dashboard</span>
+
     <div class="navbar-header tem">
       <a class="navbar-brand " href="https://chronoanalytics.in/">
         <img
@@ -1107,7 +1191,7 @@ padding-top:40px ;
 
   </div>
 
-  <div class="sidebar ">
+  <div class="sidebar " style="z-index:1;">
  
 
       <div class="close-button" id="closeButton">
@@ -1129,7 +1213,7 @@ padding-top:40px ;
             <ul>
               <a class="anac" href="#">
                 <li>1. Demo</li>
-
+               
 
               </a>
               <a class="anac" href="#">
