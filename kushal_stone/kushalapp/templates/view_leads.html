@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>All Leads</title>
+</head>
+<body>
+    <h2>Leads List</h2>
+    <a href="{% url 'add_lead' %}">+ Add New Lead</a><br><br>
+
+    <table border="1" cellpadding="10">
+        <tr>
+            <th>Full Name</th>
+            <th>Mobile</th>
+            <th>Email</th>
+            <th>Sales Person</th>
+            <th>Follow-up Date</th>
+           
+        </tr>
+        {% for lead in leads %}
+        <tr>
+            <td>{{ lead.full_name }}</td>
+            <td>{{ lead.mobile_number }}</td>
+            <td>{{ lead.email }}</td>
+            <td>{{ lead.sales_person.username }}</td>
+            <td>{{ lead.follow_up_date }}</td>
+           
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6">No leads found.</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

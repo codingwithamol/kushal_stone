@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Lead</title>
+    <style>
+        .error { color: red; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <h2>Add New Lead</h2>
+    <a href="{% url 'view_leads' %}">View All Leads</a><br><br>
+
+    {% if errors %}
+        <div class="error">
+            <ul>
+            {% for field, msg in errors.items %}
+                <li>{{ field }}: {{ msg }}</li>
+            {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    <form method="post" id="leadForm">
+        {% csrf_token %}
+
+        <label>Full Name:</label>
+        <input type="text" name="full_name" required><br>
+
+        <label>Mobile Number:</label>
+        <input type="text" name="mobile_number" required><br>
+
+        <label>Email:</label>
+        <input type="email" name="email" required><br>
+
+        <label>Address:</label>
+        <textarea name="address" required></textarea><br>
+
+        <label>Architect Name:</label>
+        <input type="text" name="architect_name"><br>
+
+        <label>Architect Contact:</label>
+        <input type="text" name="architect_number"><br>
+
+        <label>Enquiry Date:</label>
+        <input type="date" name="enquiry_date"><br>
+
+        <label>Sales Person:</label>
+        <select name="sales_person">
+            {% for person in sales_persons %}
+                <option value="{{ person.id }}">{{ person.username }}</option>
+            {% endfor %}
+        </select><br>
+
+        <label>Follow-Up Person:</label>
+        <select name="follow_up_person">
+            {% for person in follow_up_persons %}
+                <option value="{{ person.id }}">{{ person.username }}</option>
+            {% endfor %}
+        </select><br>
+
+        <label>Customer Segment:</label>
+        <select name="customer_segment">
+            <option value="Retail/individual">Retail/individual</option>
+            <option value="B2B">B2B</option>
+            <option value="Reseller">Reseller</option>
+            <option value="Commercial/Corporate">Commercial/Corporate</option>
+        </select><br>
+
+        <label>Follow-Up Date:</label>
+        <input type="date" name="follow_up_date"><br>
+
+        <label>Source:</label>
+        <select name="source" onchange="toggleOtherSource(this)">
+            <option value="">--Select--</option>
+            <option value="Instagram">Instagram</option>
+            <option value="Facebook">Facebook</option>
+            <option value="Indiamart">Indiamart</option>
+            <option value="Google">Google</option>
+            <option value="Reference">Reference</option>
+            <option value="Other">Other</option>
+        </select><br>
+
+        <div id="other_source_field" style="display:none;">
+            <label>Other Source:</label>
+            <input type="text" name="source_other"><br>
+        </div>
+
+        <label><input type="checkbox" id="show_products" onchange="toggleProducts()"> Products</label>
+        <label><input type="checkbox" id="show_services" onchange="toggleServices()"> Services</label><br>
+
+        <div id="product_list" style="display:none;">
+            <p><strong>Choose Products:</strong></p>
+            {% for product in products %}
+                <label><input type="checkbox" name="products" value="{{ product.id }}"> {{ product.name }}</label><br>
+            {% endfor %}
+        </div>
+
+        <div id="service_list" style="display:none;">
+            <p><strong>Choose Services:</strong></p>
+            {% for service in services %}
+                <label><input type="checkbox" name="services" value="{{ service.id }}"> {{ service.name }}</label><br>
+            {% endfor %}
+        </div>
+
+        <input type="hidden" name="requirements" id="requirements">
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <script>
+        function toggleProducts() {
+            document.getElementById("product_list").style.display =
+                document.getElementById("show_products").checked ? "block" : "none";
+        }
+
+        function toggleServices() {
+            document.getElementById("service_list").style.display =
+                document.getElementById("show_services").checked ? "block" : "none";
+        }
+
+        function updateRequirementField() {
+            const productsChecked = document.getElementById('show_products').checked;
+            const servicesChecked = document.getElementById('show_services').checked;
+
+            let requirementValue = '';
+            if (productsChecked && servicesChecked) {
+                requirementValue = 'both';
+            } else if (productsChecked) {
+                requirementValue = 'products';
+            } else if (servicesChecked) {
+                requirementValue = 'services';
+            }
+            document.getElementById('requirements').value = requirementValue;
+        }
+
+        function toggleOtherSource(select) {
+            document.getElementById('other_source_field').style.display =
+                select.value === 'Other' ? 'block' : 'none';
+        }
+
+        document.getElementById('leadForm').addEventListener('submit', function () {
+            updateRequirementField();
+        });
+    </script>
+</body>
+</html>
