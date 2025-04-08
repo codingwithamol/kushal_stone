@@ -95,3 +95,76 @@ def create_user(request):
         messages.success(request, 'User created successfully')
         return redirect('admin_dashboard')
     return render(request, 'create_user.html')
+
+
+
+
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Product, Service
+
+def is_admin_user(user):
+    return user.is_authenticated and user.role == 'Admin'
+
+@login_required
+@user_passes_test(is_admin_user)
+def requirements_dashboard(request):
+    products = Product.objects.all()
+    services = Service.objects.all()
+
+    if request.method == 'POST':
+        if 'add_product' in request.POST:
+            name = request.POST.get('product_name')
+            if name:
+                Product.objects.create(name=name)
+                messages.success(request, 'Product added successfully.')
+                return redirect('requirements_dashboard')
+
+        elif 'add_service' in request.POST:
+            name = request.POST.get('service_name')
+            if name:
+                Service.objects.create(name=name)
+                messages.success(request, 'Service added successfully.')
+                return redirect('requirements_dashboard')
+
+    return render(request, 'requirements_dashboard.html', {
+        'products': products,
+        'services': services,
+    })
+@login_required
+@user_passes_test(is_admin_user)
+def delete_product(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    product.delete()
+    return redirect('requirements_dashboard')
+
+@login_required
+@user_passes_test(is_admin_user)
+def delete_service(request, pk):
+    service = get_object_or_404(Service, pk=pk)
+    service.delete()
+    return redirect('requirements_dashboard')
+
+@login_required
+@user_passes_test(is_admin_user)
+def edit_product(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    if request.method == 'POST':
+        new_name = request.POST.get('product_name')
+        if new_name:
+            product.name = new_name
+            product.save()
+            return redirect('requirements_dashboard')
+    return render(request, 'edit_product.html', {'product': product})
+
+@login_required
+@user_passes_test(is_admin_user)
+def edit_service(request, pk):
+    service = get_object_or_404(Service, pk=pk)
+    if request.method == 'POST':
+        new_name = request.POST.get('service_name')
+        if new_name:
+            service.name = new_name
+            service.save()
+            return redirect('requirements_dashboard')
+    return render(request, 'edit_service.html', {'service': service})

@@ -28,3 +28,16 @@ class CustomUser(AbstractUser):
     
     # class Meta:
     #     unique_together = ('mobile_number', 'role')  # Ensure unique combination of mobile_number and role
+
+
+class Product(models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+class Service(models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name

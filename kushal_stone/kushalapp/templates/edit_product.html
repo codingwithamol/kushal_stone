@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Product</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+        }
+
+        input[type="text"] {
+            padding: 6px;
+            width: 250px;
+            margin-right: 10px;
+        }
+
+        button {
+            padding: 6px 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Edit Product</h2>
+<form method="post">
+    {% csrf_token %}
+    <input type="text" name="product_name" value="{{ product.name }}" required>
+    <button type="submit">Update</button>
+</form>
+
+<a href="{% url 'requirements_dashboard' %}">Back</a>
+
+</body>
+</html>

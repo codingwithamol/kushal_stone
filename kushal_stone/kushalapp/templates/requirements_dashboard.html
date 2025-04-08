@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Requirements - Admin Panel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+        }
+
+        h2, h3, h4 {
+            margin-top: 40px;
+        }
+
+        input[type="text"] {
+            padding: 6px;
+            width: 250px;
+            margin-right: 10px;
+        }
+
+        button {
+            padding: 6px 12px;
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        hr {
+            margin: 40px 0;
+        }
+
+        .messages {
+            color: green;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Requirements - Admin Panel</h2>
+
+<!-- Display messages -->
+{% if messages %}
+  <div class="messages">
+    <ul>
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endif %}
+
+<h3>Add Product</h3>
+<form method="post">
+    {% csrf_token %}
+    <input type="text" name="product_name" placeholder="Product Name" required>
+    <button type="submit" name="add_product">Add Product</button>
+</form>
+
+<h4>Product List</h4>
+<ul>
+    {% for product in products %}
+        <li>
+            {{ product.name }}
+            <a href="{% url 'edit_product' product.pk %}">Edit</a> |
+            <a href="{% url 'delete_product' product.pk %}">Delete</a>
+        </li>
+    {% empty %}
+        <li>No products added yet.</li>
+    {% endfor %}
+</ul>
+
+<hr>
+
+<h3>Add Service</h3>
+<form method="post">
+    {% csrf_token %}
+    <input type="text" name="service_name" placeholder="Service Name" required>
+    <button type="submit" name="add_service">Add Service</button>
+</form>
+
+<h4>Service List</h4>
+<ul>
+    {% for service in services %}
+        <li>
+            {{ service.name }}
+            <a href="{% url 'edit_service' service.pk %}">Edit</a> |
+            <a href="{% url 'delete_service' service.pk %}">Delete</a>
+        </li>
+    {% empty %}
+        <li>No services added yet.</li>
+    {% endfor %}
+</ul>
+
+</body>
+</html>
