@@ -6,49 +6,52 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            padding: 40px;
-        }
+         }
+ 
 
-        input[type="text"] {
-            padding: 6px;
-            width: 250px;
-            margin-right: 10px;
-        }
+      
 
-        button {
-            padding: 6px 12px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        a {
-            display: inline-block;
-            margin-top: 20px;
-            color: #007bff;
+     
+        a:hover {
             text-decoration: none;
         }
-
-        a:hover {
-            text-decoration: underline;
+        .card-inside{
+            padding: 10px;
+          
+        }
+        .card{
+            padding: 10px;
         }
     </style>
 </head>
 <body>
+    {% include 'Admin_Base.html' %}
+<div class="main">
+   <div class="container second-box">
+<div class="row">
+    <div class="col-md-4"></div>
+    <div class="col-md-4 card-inside">
+<div class="card">
+                 
+<h2 class="text-center">Edit Service</h2>
+<div class="card-header">
+     
 
-<h2>Edit Service</h2>
-<form method="post">
-    {% csrf_token %}
-    <input type="text" name="service_name" value="{{ service.name }}" required>
-    <button type="submit">Update</button>
-</form>
+    <form method="post">
+        {% csrf_token %}
+        <input type="text" name="service_name" value="{{ service.name }}" required class="form-control">
+        <button type="submit" class="submit-buttons">Update</button>
+    </form>
+    <a href="{% url 'requirements_dashboard' %}"class="btn btn-outline-info mt-5" style="width: 150px;" >Back</a>
 
-<a href="{% url 'requirements_dashboard' %}">Back</a>
+</div>
+</div>
+    </div>
+    <div class="col-md-4"></div>
+</div>
+   </div>
+</div>
+{%include 'footer.html'%}
 
 </body>
 </html>
