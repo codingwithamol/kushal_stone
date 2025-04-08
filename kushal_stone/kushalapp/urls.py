@@ -18,5 +18,9 @@ urlpatterns = [
     path('service/delete/<int:pk>/', views.delete_service, name='delete_service'),
     path('product/edit/<int:pk>/', views.edit_product, name='edit_product'),
     path('service/edit/<int:pk>/', views.edit_service, name='edit_service'),
+   path('add_lead/', views.add_lead, name='add_lead'),
+    path('view-leads/', views.view_leads, name='view_leads'),
+   #  path('edit-lead/<int:pk>/', views.edit_lead, name='edit_lead'),
+   
     
 ]

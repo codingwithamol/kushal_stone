@@ -168,3 +168,135 @@ def edit_service(request, pk):
             service.save()
             return redirect('requirements_dashboard')
     return render(request, 'edit_service.html', {'service': service})
+
+
+
+
+
+# views.py
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import Product, Service, Lead, CustomUser
+from django.contrib.auth.decorators import login_required
+
+
+@login_required
+def add_lead(request):
+    products = Product.objects.all()
+    services = Service.objects.all()
+    sales_persons = CustomUser.objects.filter(role='Sales')  # corrected
+    follow_up_persons = CustomUser.objects.filter(role='Sales')
+
+    if request.method == 'POST':
+        data = request.POST
+        errors = {}
+
+        required_fields = [
+            'full_name', 'mobile_number', 'email', 'requirements',
+            'address', 'architect_name', 'architect_number',
+            'source', 'enquiry_date', 'sales_person',
+            'customer_segment', 'follow_up_date', 'follow_up_person'
+        ]
+
+        for field in required_fields:
+            if not data.get(field):
+                errors[field] = "This field can't be empty."
+
+        if data.get('source') == 'Other' and not data.get('source_other'):
+            errors['source_other'] = "Please specify other source."
+
+        if errors:
+            return render(request, 'add_lead.html', {
+                'products': products,
+                'services': services,
+                'sales_persons': sales_persons,
+                'follow_up_persons': follow_up_persons,
+                'errors': errors,
+                'data': data
+            })
+
+        lead = Lead.objects.create(
+            full_name=data['full_name'],
+            mobile_number=data['mobile_number'],
+            email=data['email'],
+            requirements=data['requirements'],
+            address=data['address'],
+            architect_name=data['architect_name'],
+            architect_number=data['architect_number'],
+            source=data['source'],
+            source_other=data.get('source_other'),
+            enquiry_date=data['enquiry_date'],
+            sales_person_id=data['sales_person'],
+            customer_segment=data['customer_segment'],
+            follow_up_date=data['follow_up_date'],
+            follow_up_person_id=data['follow_up_person']
+        )
+
+        if data['requirements'] == 'products':
+            lead.products.set(data.getlist('products'))
+        elif data['requirements'] == 'services':
+            lead.services.set(data.getlist('services'))
+        else:
+            lead.products.set(data.getlist('products'))
+            lead.services.set(data.getlist('services'))
+
+        messages.success(request, 'Lead added successfully!')
+        return redirect('view_leads')
+
+    return render(request, 'add_lead.html', {
+        'products': products,
+        'services': services,
+        'sales_persons': sales_persons,
+        'follow_up_persons': follow_up_persons
+    })
+
+
+@login_required
+def view_leads(request):
+    leads = Lead.objects.all()
+    return render(request, 'view_leads.html', {'leads': leads})
+
+# @login_required
+# def edit_lead(request, pk):
+#     lead = get_object_or_404(Lead, pk=pk)
+#     products = Product.objects.all()
+#     services = Service.objects.all()
+#     sales_persons = CustomUser.objects.filter(role='Sales')
+
+#     if request.method == 'POST':
+#         data = request.POST
+#         lead.full_name = data['full_name']
+#         lead.mobile_number = data['mobile_number']
+#         lead.email = data['email']
+#         lead.requirements = data['requirements']
+#         lead.address = data['address']
+#         lead.architect_name = data['architect_name']
+#         lead.architect_number = data['architect_number']
+#         lead.source = data['source']
+#         lead.source_other = data.get('source_other')
+#         lead.enquiry_date = data['enquiry_date']
+#         lead.sales_person_id = data['sales_person']
+#         lead.customer_segment = data['customer_segment']
+#         lead.follow_up_date = data['follow_up_date']
+#         lead.follow_up_person_id = data['follow_up_person']
+#         lead.save()
+
+#         if data['requirements'] == 'products':
+#             lead.products.set(data.getlist('products'))
+#             lead.services.clear()
+#         elif data['requirements'] == 'services':
+#             lead.services.set(data.getlist('services'))
+#             lead.products.clear()
+#         else:
+#             lead.products.set(data.getlist('products'))
+#             lead.services.set(data.getlist('services'))
+
+#         messages.success(request, 'Lead updated successfully!')
+#         return redirect('view_leads')
+
+#     return render(request, 'edit_lead.html', {
+#         'lead': lead,
+#         'products': products,
+#         'services': services,
+#         'sales_persons': sales_persons
+#     })
