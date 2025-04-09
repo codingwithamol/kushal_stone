@@ -2,20 +2,53 @@
 <html>
 <head>
     <title>All Leads</title>
+    <style>
+        .form-row{
+            margin-top: 90px;
+          }
+          label{
+            font-weight: bold;
+          }
+          .form-box {
+            box-shadow: 0px 0px 46px #dcdcdc;
+            border-radius: 10px;
+            padding: 30px;
+            
+          }
+          table{
+            min-width: 400px;
+          }
+          td {
+            min-width: 140px;
+        }
+        .form-row-inner{
+            min-height: 50vh;
+        }
+    </style>
 </head>
 <body>
-    <h2>Leads List</h2>
-    <a href="{% url 'add_lead' %}">+ Add New Lead</a><br><br>
+    {% include 'Sales_Base.html' %}
+<div class="main">
+    <div class="container form-row">
+        <div class="row form-row-inner">
+            <!-- <div class="col-md-2"></div> -->
+            <div class="col-md-12 form-box ">
+                
+    <h2 class="text-center">Leads List</h2>
+    <a href="{% url 'add_lead' %}" class="btn btn-outline-info">+ Add New Lead</a><br><br>
 
-    <table border="1" cellpadding="10">
+    <div style="max-height: 400px; overflow-y: auto;" class="table-box">
+        <table class="table table-bordered table-striped table-hover" style="min-width: 600px;">
+            <thead class="thead-dark" style="position: sticky; top: 0; background-color: #f8f9fa; z-index: 1;">
         <tr>
             <th>Full Name</th>
             <th>Mobile</th>
             <th>Email</th>
             <th>Sales Person</th>
-            <th>Follow-up Date</th>
+            <th style="width: 100px;">Follow-up Date</th>
            
         </tr>
+        </thead>
         {% for lead in leads %}
         <tr>
             <td>{{ lead.full_name }}</td>
@@ -31,5 +64,15 @@
         </tr>
         {% endfor %}
     </table>
+   </div>
+
+            </div>
+            <!-- <div class="col-md-2"></div> -->
+
+        </div>
+    </div>
+</div>
+    {%include 'footer.html'%}
+
 </body>
 </html>
