@@ -19,7 +19,22 @@
       background-color: #f2eefc !important;
       color: #F4F4F5 !important;
     }
+    .dark-mode .btn-shine{
+      transform: translate(-50%, -50%);
+      color: #fff !important;
+      background: linear-gradient(to left, rgb(255, 255, 255), rgba(13, 10, 10, 0.838));
+      background-position: 0;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shine 17s infinite linear;
+      animation-fill-mode: forwards;
+      -webkit-text-size-adjust: none;
+      font-weight: 600;
+      text-decoration: none;
+      white-space: nowrap;
+      font-family: "Poppins", sans-serif;
 
+    }
     .header {
       display: flex;
       justify-content: space-between;
@@ -77,7 +92,7 @@
       border-radius: 1px !important;
       /* Optional for better aesthetics */
       margin-top: 5%;
-      z-index: auto;
+      z-index: 5;
     }
 
 
@@ -503,10 +518,27 @@ padding-top:40px ;
       font-weight: 400;
     }
 
-    label {
-      margin-top: 20px;
-      color: #3498db;
-    }
+    .submit-buttons {
+      width: 100%;
+      background: linear-gradient(to right, #6a11cb, #2575fc);
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 25px !important;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 1.5em !important;
+  }
+  
+  .submit-buttons:hover {
+      background: linear-gradient(to right, #2575fc, #6a11cb);
+      transform: scale(1);
+      box-shadow: 0 10px 10px rgba(106, 17, 203, 0.5);
+  }
+  
+
 
     /* From Uiverse.io by satyamchaudharydev */
     /* From Uiverse.io by satyamchaudharydev */
@@ -731,12 +763,15 @@ padding-top:40px ;
       text-decoration: none;
       color: black;
       /* Default text color in light mode */
-      transition: color 0.3s, background 0.3s;
+      transition: 1s;
     }
 
     .sidebar .anac:hover {
       background: #ddd;
       color: black;
+      border-radius: 10px;
+      padding: 10px;
+      margin-left: 5px;
     }
 
     /* Toggle Button */
@@ -1203,10 +1238,14 @@ top: 45px;
           <li>
             <i class="fas fa-home"></i>Sales Dashboard
           </li>
-           
-    <a href="{% url 'add_lead' %}">Add Lead</a>
-   
-        </a>
+           </a>
+           <a class="anac" href="{% url 'add_lead' %}" style="text-decoration: none;">
+            <li>
+              <i class="fas fa-home"></i>Add Lead
+            </li>
+             </a>
+    
+         
         <li class="has-submenu">
           <i class="fas fa-box"></i> Demo <span class="arrow-down"></span>
           <div class="submenu">
@@ -1328,3 +1367,40 @@ top: 45px;
 </body>
 
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
