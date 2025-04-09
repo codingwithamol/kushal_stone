@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head><title>Follow Up 2</title></head>
+<body>
+<h2>Follow Up 2 for {{ lead.full_name }}</h2>
+<form method="POST">
+    {% csrf_token %}
+    <label>Third Follow-Up Date:</label>
+    <input type="date" name="next_followup_date"><br>
+
+    <label>Select 3rd Follow-up Sales Person</label>
+    <select name="third_followup_person">
+      {% for person in sales_persons %}
+      <option value="{{ person.id }}">{{ person.username }}</option>
+      {% endfor %}
+    </select>
+
+    <label>Type of Lead</label>
+    <select name="lead_type">
+      <option value="Hot">Hot</option>
+      <option value="Warm">Warm</option>
+      <option value="Cold">Cold</option>
+      <option value="Not Interested">Not Interested</option>
+    </select>
+
+    <label>Remarks:</label>
+    <textarea name="remarks"></textarea><br>
+
+    <label>Close Lead:</label>
+    <input type="checkbox" name="close_status" value="on"><br>
+
+    <button type="submit">Submit</button>
+</form>
+</body>
+</html>

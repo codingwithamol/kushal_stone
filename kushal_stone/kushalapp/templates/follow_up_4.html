@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head><title>Follow Up 4</title></head>
+<body>
+<h2>Follow Up 4 for {{ lead.full_name }}</h2>
+<form method="POST">
+    {% csrf_token %}
+    <label>Fifth Follow-Up Date:</label>
+    <input type="date" name="fifth_followup_date"><br>
+
+    <label>Fifth Follow-Up Person ID:</label>
+    <input type="number" name="fifth_followup_person"><br>
+
+    <label>Lead Type:</label>
+    <input type="text" name="lead_type"><br>
+
+    <label>Remarks:</label>
+    <textarea name="remarks"></textarea><br>
+
+    <label>Close Lead:</label>
+    <input type="checkbox" name="close_status" value="on"><br>
+
+    <button type="submit">Submit</button>
+</form>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <h3>First Follow-up for {{ lead.full_name }}</h3>
+  
+    <label>Customer Visited?</label>
+    <select name="customer_visited">
+      <option value="yes">Yes</option>
+      <option value="no">No</option>
+    </select>
+  
+    <label>Inspection onsite done?</label>
+    <select name="inspection_done">
+      <option value="yes">Yes</option>
+      <option value="no">No</option>
+    </select>
+  
+    <label>Type of Lead</label>
+    <select name="lead_type">
+      <option value="Hot">Hot</option>
+      <option value="Warm">Warm</option>
+      <option value="Cold">Cold</option>
+      <option value="Not Interested">Not Interested</option>
+    </select>
+  
+    <label>Quotation Given?</label>
+    <select name="quotation_given" id="quotation_given">
+      <option value="yes">Yes</option>
+      <option value="no">No</option>
+    </select>
+  
+    <div id="quotation_fields" style="display:none">
+      <label>Enter Quotation Amount</label>
+      <input type="number" name="quotation_amount">
+  
+      <label>Description</label>
+      <textarea name="description"></textarea>
+  
+      <label>Upload Quotation File</label>
+      <input type="file" name="quotation_file">
+    </div>
+  
+    <label>Next Follow-Up Date:</label>
+    <input type="date" name="next_followup_date" required><br>
+    
+    <select name="next_followup_person" required>
+        <option value="" disabled selected>Select Sales Person</option>
+        {% for person in sales_persons %}
+          <option value="{{ person.id }}">{{ person.username }}</option>
+        {% endfor %}
+      </select>
+      
+    
+  
+    <button type="submit">Submit</button>
+  </form>
+  
+  <script>
+    document.getElementById('quotation_given').addEventListener('change', function () {
+      const display = this.value === 'yes' ? 'block' : 'none';
+      document.getElementById('quotation_fields').style.display = display;
+    });
+  </script>
