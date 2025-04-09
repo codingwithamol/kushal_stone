@@ -39,16 +39,43 @@
       <input type="file" name="quotation_file">
     </div>
   
-    <label>Next Follow-Up Date:</label>
-    <input type="date" name="next_followup_date" required><br>
     
-    <select name="next_followup_person" required>
+    
+    <form method="post" action="{% url 'assign_lead' lead.id %}">
+      {% csrf_token %}
+      <label for="new_assignee"><strong>Reassign Lead To:</strong></label>
+      <select name="new_assignee" required>
         <option value="" disabled selected>Select Sales Person</option>
         {% for person in sales_persons %}
           <option value="{{ person.id }}">{{ person.username }}</option>
         {% endfor %}
       </select>
-      
+      <button type="submit">Assign</button>
+    </form>
+    
+    <!-- Show Close Button Only If Not Already Closed -->
+    {% if not lead.is_closed %}
+  <form method="post" action="{% url 'close_lead' lead.id %}">
+    {% csrf_token %}
+    <label><strong>Outcome:</strong></label><br>
+    <label><input type="radio" name="win_status" value="win" required> Win</label><br>
+    <label><input type="radio" name="win_status" value="lose"> Lose</label><br><br>
+    
+    <button type="submit" style="background-color: red; color: white; padding: 5px 10px; border: none; border-radius: 5px;">
+      Close Lead
+    </button>
+  </form>
+{% else %}
+  <p style="color: green;"><strong>Status:</strong>
+    {% if lead.win_status %}
+      <span style="color: green;">Won</span>
+    {% else %}
+      <span style="color: red;">Lost</span>
+    {% endif %}
+  </p>
+{% endif %}
+
+    
     
   
     <button type="submit">Submit</button>

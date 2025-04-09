@@ -1,35 +1,92 @@
-<!DOCTYPE html>
-<html>
-<head><title>Follow Up 2</title></head>
-<body>
-<h2>Follow Up 2 for {{ lead.full_name }}</h2>
-<form method="POST">
-    {% csrf_token %}
-    <label>Third Follow-Up Date:</label>
-    <input type="date" name="next_followup_date"><br>
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <h3>First Follow-up 2 for {{ lead.full_name }}</h3>
 
-    <label>Select 3rd Follow-up Sales Person</label>
-    <select name="third_followup_person">
-      {% for person in sales_persons %}
+  <label>Customer Visited?</label>
+  <select name="customer_visited" required>
+    <option value="yes">Yes</option>
+    <option value="no">No</option>
+  </select>
+
+  <label>Inspection onsite done?</label>
+  <select name="inspection_done" required>
+    <option value="yes">Yes</option>
+    <option value="no">No</option>
+  </select>
+
+  <label>Type of Lead</label>
+  <select name="lead_type" required>
+    <option value="Hot">Hot</option>
+    <option value="Warm">Warm</option>
+    <option value="Cold">Cold</option>
+    <option value="Not Interested">Not Interested</option>
+  </select>
+
+  <label>Quotation Given?</label>
+  <select name="quotation_given" id="quotation_given" required>
+    <option value="yes">Yes</option>
+    <option value="no">No</option>
+  </select>
+
+  <div id="quotation_fields" style="display:none">
+    <label>Enter Quotation Amount</label>
+    <input type="number" name="quotation_amount">
+
+    <label>Description</label>
+    <textarea name="description"></textarea>
+
+    <label>Upload Quotation File</label>
+    <input type="file" name="quotation_file">
+  </div>
+
+  <label>Next Follow-Up Date</label>
+  <input type="date" name="next_followup_date"><br>
+
+  <label><strong>Assign Next Follow-Up To:</strong></label>
+  <select name="next_followup_person" required>
+    <option value="" disabled selected>Select Sales Person</option>
+    {% for person in sales_persons %}
       <option value="{{ person.id }}">{{ person.username }}</option>
-      {% endfor %}
-    </select>
+    {% endfor %}
+  </select><br><br>
 
-    <label>Type of Lead</label>
-    <select name="lead_type">
-      <option value="Hot">Hot</option>
-      <option value="Warm">Warm</option>
-      <option value="Cold">Cold</option>
-      <option value="Not Interested">Not Interested</option>
-    </select>
+  <label><input type="checkbox" name="close_status" value="on"> Close Lead</label><br><br>
 
-    <label>Remarks:</label>
-    <textarea name="remarks"></textarea><br>
-
-    <label>Close Lead:</label>
-    <input type="checkbox" name="close_status" value="on"><br>
-
-    <button type="submit">Submit</button>
+  <button type="submit" class="btn btn-primary">Submit Follow-Up</button>
 </form>
-</body>
-</html>
+
+<hr>
+
+<!-- Reassign Lead -->
+<form method="post" action="{% url 'assign_lead' lead.id %}">
+  {% csrf_token %}
+  <label for="new_assignee"><strong>Reassign Lead To:</strong></label>
+  <select name="new_assignee" required>
+    <option value="" disabled selected>Select Sales Person</option>
+    {% for person in sales_persons %}
+      <option value="{{ person.id }}">{{ person.username }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit">Assign</button>
+</form>
+
+<hr>
+
+<!-- Close Lead -->
+{% if not lead.is_closed %}
+  <form method="post" action="{% url 'close_lead' lead.id %}">
+    {% csrf_token %}
+    <button type="submit" style="background-color: red; color: white; padding: 5px 10px; border: none; border-radius: 5px;">
+      Close Lead
+    </button>
+  </form>
+{% else %}
+  <p style="color: green;"><strong>Status:</strong> Closed</p>
+{% endif %}
+
+<script>
+  document.getElementById('quotation_given').addEventListener('change', function () {
+    const display = this.value === 'yes' ? 'block' : 'none';
+    document.getElementById('quotation_fields').style.display = display;
+  });
+</script>

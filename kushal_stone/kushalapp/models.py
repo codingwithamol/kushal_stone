@@ -84,6 +84,7 @@ class Lead(models.Model):
     follow_up_date = models.DateField(null=False, blank=False)
     follow_up_person = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='follow_up_person')
     is_closed = models.BooleanField(default=False)
+    win_status = models.BooleanField(null=True, blank=True)  
 
     def __str__(self):
         return self.full_name
@@ -125,12 +126,11 @@ class FollowUp1(FollowUpBase):
 
 
 class FollowUp2(FollowUpBase):
-    next_followup_date = models.DateField()
+    next_followup_date = models.DateField(null=True, blank=True)
     next_followup_person = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='followup3_person')
 
-
 class FollowUp3(FollowUpBase):
-    next_followup_date = models.DateField()
+    next_followup_date = models.DateField(null=True, blank=True)
     next_followup_person = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='followup4_person')
 
 

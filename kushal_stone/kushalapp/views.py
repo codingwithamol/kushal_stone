@@ -271,13 +271,13 @@ from .models import Lead
 
 @login_required
 def my_work(request):
-    # Leads directly assigned to the user
-    direct_leads = Lead.objects.filter(follow_up_person=request.user)
+    # Directly assigned leads (not closed)
+    direct_leads = Lead.objects.filter(follow_up_person=request.user, is_closed=False)
 
-    # Leads where the user is assigned as next follow-up person in followup1
-    followup1_leads = Lead.objects.filter(followup1__next_followup_person=request.user)
+    # Leads assigned as next follow-up in FollowUp1, but not closed
+    followup1_leads = Lead.objects.filter(followup1__next_followup_person=request.user, is_closed=False)
 
-    # Combine both querysets and avoid duplicates
+    # Combine and remove duplicates
     leads = direct_leads.union(followup1_leads)
 
     lead_data = []
@@ -329,33 +329,36 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
-User = get_user_model()
-
 @login_required
 def follow_up_1(request, lead_id):
     lead = get_object_or_404(Lead, id=lead_id)
-    sales_persons = User.objects.filter(role='Sales')
+    sales_persons = CustomUser.objects.filter(role='Sales')
 
     if hasattr(lead, 'followup1'):
         return redirect('follow_up_2', lead_id=lead_id)
 
     if request.method == 'POST':
-        followup = FollowUp1()
-        followup.lead = lead
-        followup.customer_visited = request.POST.get('customer_visited') == 'yes'
-        followup.inspection_done = request.POST.get('inspection_done') == 'yes'
-        followup.lead_type = request.POST.get('lead_type')
-        followup.quotation_given = request.POST.get('quotation_given') == 'yes'
-        followup.quotation_amount = request.POST.get('quotation_amount') or None
-        followup.description = request.POST.get('description')
-        followup.quotation_file = request.FILES.get('quotation_file')
-        followup.next_followup_date = request.POST.get('next_followup_date')
+        followup = FollowUp1(
+            lead=lead,
+            customer_visited=request.POST.get('customer_visited') == 'yes',
+            inspection_done=request.POST.get('inspection_done') == 'yes',
+            quotation_given=request.POST.get('quotation_given') == 'yes',
+            quotation_amount=request.POST.get('quotation_amount') or None,
+            description=request.POST.get('description'),
+            quotation_file=request.FILES.get('quotation_file'),
+            next_followup_date=request.POST.get('next_followup_date'),
+        )
 
         user_id = request.POST.get('next_followup_person')
         if user_id:
             followup.next_followup_person = CustomUser.objects.get(id=user_id)
 
         followup.save()
+
+        # OPTIONAL: Transfer the lead assignment (if you want to)
+        # lead.follow_up_person = followup.next_followup_person
+        # lead.save()
+
         return redirect('my_work')
 
     return render(request, 'follow_up_1.html', {
@@ -364,25 +367,50 @@ def follow_up_1(request, lead_id):
     })
 
 
+
 @login_required
 def follow_up_2(request, lead_id):
     lead = get_object_or_404(Lead, id=lead_id)
-    sales_persons = User.objects.filter(role='Sales')  # Adjust field if needed
+    sales_persons = CustomUser.objects.filter(role='Sales')  # Or use your role logic
 
     if hasattr(lead, 'followup2'):
-        return redirect('follow_up_3', lead_id=lead_id)
+        return redirect('my_work')
+
     if request.method == 'POST':
         followup = FollowUp2()
         followup.lead = lead
         followup.next_followup_date = request.POST.get('next_followup_date')
-        followup.next_followup_person_id = request.POST.get('third_followup_person')
-
-        followup.lead_type = request.POST.get('lead_type')
         followup.remarks = request.POST.get('remarks')
-        followup.close_status = request.POST.get('close_status')
+        followup.lead_type = request.POST.get('lead_type')
+
+        # Handle reassignment
+        next_user_id = request.POST.get('third_followup_person')
+        if next_user_id:
+            next_user = CustomUser.objects.get(id=next_user_id)
+            followup.next_followup_person = next_user
+
+        # Handle close lead
+        if request.POST.get('close_status'):
+            followup.close_status = 'Win'  # Or 'Loss' based on UI
+            lead.is_closed = True
+            lead.save()
+        else:
+            followup.close_status = 'Open'
+
         followup.save()
-        return redirect('my_work') if followup.close_status else redirect('follow_up_3', lead_id=lead_id)
-    return render(request, 'follow_up_2.html', {'lead': lead , 'sales_persons': sales_persons,})
+
+        # 🚨 This ensures the current user doesn't see this lead anymore
+        # because `my_work` will now show it for the newly assigned person
+
+        return redirect('my_work')
+
+    return render(request, 'follow_up_2.html', {
+        'lead': lead,
+        'sales_persons': sales_persons
+    })
+
+
+
 
 @login_required
 def follow_up_3(request, lead_id):
@@ -519,3 +547,48 @@ def follow_up_10(request, lead_id):
         followup.save()
         return redirect('my_work')
     return render(request, 'follow_up_10.html', {'lead': lead})
+
+
+from django.contrib import messages
+
+from django.shortcuts import redirect, get_object_or_404
+from django.views.decorators.http import require_POST
+from .models import Lead
+
+from django.views.decorators.http import require_POST
+from django.shortcuts import redirect, get_object_or_404
+from .models import Lead
+
+@require_POST
+def close_lead(request, lead_id):
+    lead = get_object_or_404(Lead, id=lead_id)
+
+    # Set is_closed to True
+    lead.is_closed = True
+
+    # Determine win or lose
+    status = request.POST.get('win_status')
+    if status == 'win':
+        lead.win_status = True
+    else:
+        lead.win_status = False
+
+    lead.save()
+    return redirect('my_work')  # or wherever you want to go
+
+
+@login_required
+def assign_lead(request, lead_id):
+    lead = get_object_or_404(Lead, id=lead_id)
+    
+    if request.method == 'POST':
+        new_user_id = request.POST.get('new_assignee')
+        if new_user_id:
+            new_user = get_object_or_404(CustomUser, id=new_user_id)
+            lead.follow_up_person = new_user
+            lead.save()
+            messages.success(request, f"Lead reassigned to {new_user.username}.")
+    
+    return redirect('my_work')
+
+

@@ -94,13 +94,37 @@
                 </td>
                 <td>
                     {% if item.status.url_name %}
-                        <a href="{% url item.status.url_name item.lead.id %}" class="btn">
-                            {{ item.status.label }}
-                        </a>
+                      {% with f1=item.lead.followup1 f2=item.lead.followup2 f3=item.lead.followup3 f4=item.lead.followup4 %}
+                        {% if f1 and f1.next_followup_person != user %}
+                          <span class="btn btn-disabled">Assigned to {{ f1.next_followup_person.username }}</span>
+                        {% elif f2 and f2.next_followup_person != user %}
+                          <span class="btn btn-disabled">Assigned to {{ f2.next_followup_person.username }}</span>
+                        {% elif f3 and f3.next_followup_person != user %}
+                          <span class="btn btn-disabled">Assigned to {{ f3.next_followup_person.username }}</span>
+                        {% elif f4 and f4.next_followup_person != user %}
+                          <span class="btn btn-disabled">Assigned to {{ f4.next_followup_person.username }}</span>
+                        {% else %}
+                          <a href="{% url item.status.url_name item.lead.id %}" class="btn">{{ item.status.label }}</a>
+                        {% endif %}
+                      {% endwith %}
                     {% else %}
-                        <span class="btn btn-disabled">{{ item.status.label }}</span>
+                      <span class="btn btn-disabled">{{ item.status.label }}</span>
                     {% endif %}
-                </td>
+                  </td>
+                  
+                  <td>
+                    {% if item.lead.is_closed %}
+                      {% if item.lead.win_status %}
+                        <span style="color: green; font-weight: bold;">Won</span>
+                      {% else %}
+                        <span style="color: red; font-weight: bold;">Lost</span>
+                      {% endif %}
+                    {% else %}
+                      <span style="color: orange; font-weight: bold;">Open</span>
+                    {% endif %}
+                  </td>
+                  
+                
             </tr>
         {% empty %}
             <tr><td colspan="6">No leads assigned.</td></tr>

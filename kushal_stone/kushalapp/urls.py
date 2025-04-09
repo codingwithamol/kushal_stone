@@ -34,6 +34,10 @@ urlpatterns = [
     path('followup8/<int:lead_id>/', views.follow_up_8, name='follow_up_8'),
     path('followup9/<int:lead_id>/', views.follow_up_9, name='follow_up_9'),
     path('followup10/<int:lead_id>/', views.follow_up_10, name='follow_up_10'),
+    path('close-lead/<int:lead_id>/', views.close_lead, name='close_lead'),
+    path('assign-lead/<int:lead_id>/', views.assign_lead, name='assign_lead'),
+
+
 
 
    
