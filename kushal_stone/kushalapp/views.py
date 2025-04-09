@@ -256,47 +256,266 @@ def view_leads(request):
     leads = Lead.objects.all()
     return render(request, 'view_leads.html', {'leads': leads})
 
-# @login_required
-# def edit_lead(request, pk):
-#     lead = get_object_or_404(Lead, pk=pk)
-#     products = Product.objects.all()
-#     services = Service.objects.all()
-#     sales_persons = CustomUser.objects.filter(role='Sales')
 
-#     if request.method == 'POST':
-#         data = request.POST
-#         lead.full_name = data['full_name']
-#         lead.mobile_number = data['mobile_number']
-#         lead.email = data['email']
-#         lead.requirements = data['requirements']
-#         lead.address = data['address']
-#         lead.architect_name = data['architect_name']
-#         lead.architect_number = data['architect_number']
-#         lead.source = data['source']
-#         lead.source_other = data.get('source_other')
-#         lead.enquiry_date = data['enquiry_date']
-#         lead.sales_person_id = data['sales_person']
-#         lead.customer_segment = data['customer_segment']
-#         lead.follow_up_date = data['follow_up_date']
-#         lead.follow_up_person_id = data['follow_up_person']
-#         lead.save()
 
-#         if data['requirements'] == 'products':
-#             lead.products.set(data.getlist('products'))
-#             lead.services.clear()
-#         elif data['requirements'] == 'services':
-#             lead.services.set(data.getlist('services'))
-#             lead.products.clear()
-#         else:
-#             lead.products.set(data.getlist('products'))
-#             lead.services.set(data.getlist('services'))
 
-#         messages.success(request, 'Lead updated successfully!')
-#         return redirect('view_leads')
+# views.py
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .models import Lead, CustomUser, FollowUp1
 
-#     return render(request, 'edit_lead.html', {
-#         'lead': lead,
-#         'products': products,
-#         'services': services,
-#         'sales_persons': sales_persons
-#     })
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from .models import Lead
+
+@login_required
+def my_work(request):
+    # Leads directly assigned to the user
+    direct_leads = Lead.objects.filter(follow_up_person=request.user)
+
+    # Leads where the user is assigned as next follow-up person in followup1
+    followup1_leads = Lead.objects.filter(followup1__next_followup_person=request.user)
+
+    # Combine both querysets and avoid duplicates
+    leads = direct_leads.union(followup1_leads)
+
+    lead_data = []
+
+    for lead in leads:
+        status = ""
+        followup_date = None
+
+        if not hasattr(lead, 'followup1'):
+            status = {'label': '1st Follow Up', 'url_name': 'follow_up_1'}
+        elif not hasattr(lead, 'followup2'):
+            followup_date = lead.followup1.next_followup_date
+            status = {'label': '2nd Follow Up', 'url_name': 'follow_up_2'}
+        elif not hasattr(lead, 'followup3'):
+            followup_date = lead.followup2.next_followup_date
+            status = {'label': '3rd Follow Up', 'url_name': 'follow_up_3'}
+        elif not hasattr(lead, 'followup4'):
+            followup_date = lead.followup3.next_followup_date
+            status = {'label': '4th Follow Up', 'url_name': 'follow_up_4'}
+        else:
+            followup_date = lead.followup4.next_followup_date
+            close_status = lead.followup4.close_status
+            status = {'label': f'Closed ({close_status})', 'url_name': None}
+
+        lead_data.append({
+            'lead': lead,
+            'status': status,
+            'followup_date': followup_date
+        })
+
+    return render(request, 'my_work.html', {'lead_data': lead_data})
+
+
+@login_required
+def completed_follow_up(request):
+    # Leads that this user was previously responsible for but are now assigned to someone else
+    past_leads = Lead.objects.filter(
+        followup1__user=request.user
+    ).exclude(followup1__next_followup_person=request.user)
+
+    return render(request, 'completed_follow_up.html', {'lead_data': past_leads})
+
+
+# views.py
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Lead, CustomUser, FollowUp1, FollowUp2, FollowUp3, FollowUp4, FollowUp5, FollowUp6, FollowUp7, FollowUp8, FollowUp9, FollowUp10
+from django.contrib.auth import get_user_model
+User = get_user_model()
+
+
+User = get_user_model()
+
+@login_required
+def follow_up_1(request, lead_id):
+    lead = get_object_or_404(Lead, id=lead_id)
+    sales_persons = User.objects.filter(role='Sales')
+
+    if hasattr(lead, 'followup1'):
+        return redirect('follow_up_2', lead_id=lead_id)
+
+    if request.method == 'POST':
+        followup = FollowUp1()
+        followup.lead = lead
+        followup.customer_visited = request.POST.get('customer_visited') == 'yes'
+        followup.inspection_done = request.POST.get('inspection_done') == 'yes'
+        followup.lead_type = request.POST.get('lead_type')
+        followup.quotation_given = request.POST.get('quotation_given') == 'yes'
+        followup.quotation_amount = request.POST.get('quotation_amount') or None
+        followup.description = request.POST.get('description')
+        followup.quotation_file = request.FILES.get('quotation_file')
+        followup.next_followup_date = request.POST.get('next_followup_date')
+
+        user_id = request.POST.get('next_followup_person')
+        if user_id:
+            followup.next_followup_person = CustomUser.objects.get(id=user_id)
+
+        followup.save()
+        return redirect('my_work')
+
+    return render(request, 'follow_up_1.html', {
+        'lead': lead,
+        'sales_persons': sales_persons,
+    })
+
+
+@login_required
+def follow_up_2(request, lead_id):
+    lead = get_object_or_404(Lead, id=lead_id)
+    sales_persons = User.objects.filter(role='Sales')  # Adjust field if needed
+
+    if hasattr(lead, 'followup2'):
+        return redirect('follow_up_3', lead_id=lead_id)
+    if request.method == 'POST':
+        followup = FollowUp2()
+        followup.lead = lead
+        followup.next_followup_date = request.POST.get('next_followup_date')
+        followup.next_followup_person_id = request.POST.get('third_followup_person')
+
+        followup.lead_type = request.POST.get('lead_type')
+        followup.remarks = request.POST.get('remarks')
+        followup.close_status = request.POST.get('close_status')
+        followup.save()
+        return redirect('my_work') if followup.close_status else redirect('follow_up_3', lead_id=lead_id)
+    return render(request, 'follow_up_2.html', {'lead': lead , 'sales_persons': sales_persons,})
+
+@login_required
+def follow_up_3(request, lead_id):
+    lead = get_object_or_404(Lead, id=lead_id)
+    if hasattr(lead, 'followup3'):
+        return redirect('follow_up_4', lead_id=lead_id)
+    if request.method == 'POST':
+        followup = FollowUp3()
+        followup.lead = lead
+        followup.fourth_followup_date = request.POST.get('fourth_followup_date')
+        followup.fourth_followup_person_id = request.POST.get('fourth_followup_person')
+        followup.lead_type = request.POST.get('lead_type')
+        followup.remarks = request.POST.get('remarks')
+        followup.close_status = request.POST.get('close_status')
+        followup.save()
+        return redirect('my_work') if followup.close_status else redirect('follow_up_4', lead_id=lead_id)
+    return render(request, 'follow_up_3.html', {'lead': lead})
+
+@login_required
+def follow_up_4(request, lead_id):
+    lead = get_object_or_404(Lead, id=lead_id)
+    if hasattr(lead, 'followup4'):
+        return redirect('follow_up_5', lead_id=lead_id)
+    if request.method == 'POST':
+        followup = FollowUp4()
+        followup.lead = lead
+        followup.fifth_followup_date = request.POST.get('fifth_followup_date')
+        followup.fifth_followup_person_id = request.POST.get('fifth_followup_person')
+        followup.lead_type = request.POST.get('lead_type')
+        followup.remarks = request.POST.get('remarks')
+        followup.close_status = request.POST.get('close_status')
+        followup.save()
+        return redirect('my_work') if followup.close_status else redirect('follow_up_5', lead_id=lead_id)
+    return render(request, 'follow_up_4.html', {'lead': lead})
+
+@login_required
+def follow_up_5(request, lead_id):
+    lead = get_object_or_404(Lead, id=lead_id)
+    if hasattr(lead, 'followup5'):
+        return redirect('follow_up_6', lead_id=lead_id)
+    if request.method == 'POST':
+        followup = FollowUp5()
+        followup.lead = lead
+        followup.sixth_followup_date = request.POST.get('sixth_followup_date')
+        followup.sixth_followup_person_id = request.POST.get('sixth_followup_person')
+        followup.lead_type = request.POST.get('lead_type')
+        followup.remarks = request.POST.get('remarks')
+        followup.close_status = request.POST.get('close_status')
+        followup.save()
+        return redirect('my_work') if followup.close_status else redirect('follow_up_6', lead_id=lead_id)
+    return render(request, 'follow_up_5.html', {'lead': lead})
+
+@login_required
+def follow_up_6(request, lead_id):
+    lead = get_object_or_404(Lead, id=lead_id)
+    if hasattr(lead, 'followup6'):
+        return redirect('follow_up_7', lead_id=lead_id)
+    if request.method == 'POST':
+        followup = FollowUp6()
+        followup.lead = lead
+        followup.seventh_followup_date = request.POST.get('seventh_followup_date')
+        followup.seventh_followup_person_id = request.POST.get('seventh_followup_person')
+        followup.lead_type = request.POST.get('lead_type')
+        followup.remarks = request.POST.get('remarks')
+        followup.close_status = request.POST.get('close_status')
+        followup.save()
+        return redirect('my_work') if followup.close_status else redirect('follow_up_7', lead_id=lead_id)
+    return render(request, 'follow_up_6.html', {'lead': lead})
+
+@login_required
+def follow_up_7(request, lead_id):
+    lead = get_object_or_404(Lead, id=lead_id)
+    if hasattr(lead, 'followup7'):
+        return redirect('follow_up_8', lead_id=lead_id)
+    if request.method == 'POST':
+        followup = FollowUp7()
+        followup.lead = lead
+        followup.eighth_followup_date = request.POST.get('eighth_followup_date')
+        followup.eighth_followup_person_id = request.POST.get('eighth_followup_person')
+        followup.lead_type = request.POST.get('lead_type')
+        followup.remarks = request.POST.get('remarks')
+        followup.close_status = request.POST.get('close_status')
+        followup.save()
+        return redirect('my_work') if followup.close_status else redirect('follow_up_8', lead_id=lead_id)
+    return render(request, 'follow_up_7.html', {'lead': lead})
+
+@login_required
+def follow_up_8(request, lead_id):
+    lead = get_object_or_404(Lead, id=lead_id)
+    if hasattr(lead, 'followup8'):
+        return redirect('follow_up_9', lead_id=lead_id)
+    if request.method == 'POST':
+        followup = FollowUp8()
+        followup.lead = lead
+        followup.ninth_followup_date = request.POST.get('ninth_followup_date')
+        followup.ninth_followup_person_id = request.POST.get('ninth_followup_person')
+        followup.lead_type = request.POST.get('lead_type')
+        followup.remarks = request.POST.get('remarks')
+        followup.close_status = request.POST.get('close_status')
+        followup.save()
+        return redirect('my_work') if followup.close_status else redirect('follow_up_9', lead_id=lead_id)
+    return render(request, 'follow_up_8.html', {'lead': lead})
+
+@login_required
+def follow_up_9(request, lead_id):
+    lead = get_object_or_404(Lead, id=lead_id)
+    if hasattr(lead, 'followup9'):
+        return redirect('follow_up_10', lead_id=lead_id)
+    if request.method == 'POST':
+        followup = FollowUp9()
+        followup.lead = lead
+        followup.tenth_followup_date = request.POST.get('tenth_followup_date')
+        followup.tenth_followup_person_id = request.POST.get('tenth_followup_person')
+        followup.lead_type = request.POST.get('lead_type')
+        followup.remarks = request.POST.get('remarks')
+        followup.close_status = request.POST.get('close_status')
+        followup.save()
+        return redirect('my_work') if followup.close_status else redirect('follow_up_10', lead_id=lead_id)
+    return render(request, 'follow_up_9.html', {'lead': lead})
+
+@login_required
+def follow_up_10(request, lead_id):
+    lead = get_object_or_404(Lead, id=lead_id)
+    if hasattr(lead, 'followup10'):
+        return redirect('my_work')
+    if request.method == 'POST':
+        followup = FollowUp10()
+        followup.lead = lead
+        followup.eleventh_followup_date = request.POST.get('eleventh_followup_date')
+        followup.eleventh_followup_person_id = request.POST.get('eleventh_followup_person')
+        followup.lead_type = request.POST.get('lead_type')
+        followup.remarks = request.POST.get('remarks')
+        followup.close_status = request.POST.get('close_status')
+        followup.save()
+        return redirect('my_work')
+    return render(request, 'follow_up_10.html', {'lead': lead})

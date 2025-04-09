@@ -21,6 +21,21 @@ urlpatterns = [
    path('add_lead/', views.add_lead, name='add_lead'),
     path('view-leads/', views.view_leads, name='view_leads'),
    #  path('edit-lead/<int:pk>/', views.edit_lead, name='edit_lead'),
+    path('my-work/', views.my_work, name='my_work'),
+    path('completed-follow-up/', views.completed_follow_up, name='completed_follow_up'),
+
+    path('followup1/<int:lead_id>/', views.follow_up_1, name='follow_up_1'),
+    path('followup2/<int:lead_id>/', views.follow_up_2, name='follow_up_2'),
+    path('followup3/<int:lead_id>/', views.follow_up_3, name='follow_up_3'),
+    path('followup4/<int:lead_id>/', views.follow_up_4, name='follow_up_4'),
+    path('followup5/<int:lead_id>/', views.follow_up_5, name='follow_up_5'),
+    path('followup6/<int:lead_id>/', views.follow_up_6, name='follow_up_6'),
+    path('followup7/<int:lead_id>/', views.follow_up_7, name='follow_up_7'),
+    path('followup8/<int:lead_id>/', views.follow_up_8, name='follow_up_8'),
+    path('followup9/<int:lead_id>/', views.follow_up_9, name='follow_up_9'),
+    path('followup10/<int:lead_id>/', views.follow_up_10, name='follow_up_10'),
+
+
    
     
 ]

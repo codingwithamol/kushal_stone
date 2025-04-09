@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Completed Follow-Ups</title>
+    <style>
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 12px 15px;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+
+        th {
+            background-color: #2ecc71;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <h2>Previously Assigned Leads</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Full Name</th>
+                <th>Mobile</th>
+                <th>Email</th>
+                <th>Next Follow-up Person</th>
+                <th>Next Follow-up Date</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for lead in lead_data %}
+            <tr>
+                <td>{{ lead.full_name }}</td>
+                <td>{{ lead.mobile_number }}</td>
+                <td>{{ lead.email }}</td>
+                <td>{{ lead.followup1.next_followup_person.username }}</td>
+                <td>{{ lead.followup1.next_followup_date }}</td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="5">No completed follow-ups.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
