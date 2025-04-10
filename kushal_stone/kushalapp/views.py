@@ -259,56 +259,72 @@ def view_leads(request):
 
 
 
+
 # views.py
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Lead, CustomUser, FollowUp1
-
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from .models import Lead
 
 @login_required
 def my_work(request):
-    # Directly assigned leads (not closed)
-    direct_leads = Lead.objects.filter(follow_up_person=request.user, is_closed=False)
+    user = request.user
 
-    # Leads assigned as next follow-up in FollowUp1, but not closed
-    followup1_leads = Lead.objects.filter(followup1__next_followup_person=request.user, is_closed=False)
-
-    # Combine and remove duplicates
-    leads = direct_leads.union(followup1_leads)
+    # Fetch all leads where the user is currently responsible (direct or next follow-up)
+    leads = Lead.objects.filter(is_closed=False).distinct()
 
     lead_data = []
 
     for lead in leads:
-        status = ""
+        status = None
         followup_date = None
+        assigned_to_user = False
 
+        # Follow-Up 1
         if not hasattr(lead, 'followup1'):
-            status = {'label': '1st Follow Up', 'url_name': 'follow_up_1'}
+            if lead.follow_up_person == user:
+                status = {'label': '1st Follow Up', 'url_name': 'follow_up_1'}
+                assigned_to_user = True
+
+        # Follow-Up 2
         elif not hasattr(lead, 'followup2'):
-            followup_date = lead.followup1.next_followup_date
-            status = {'label': '2nd Follow Up', 'url_name': 'follow_up_2'}
+            if lead.followup1.next_followup_person == user:
+                followup_date = lead.followup1.next_followup_date
+                status = {'label': '2nd Follow Up', 'url_name': 'follow_up_2'}
+                assigned_to_user = True
+
+        # Follow-Up 3
         elif not hasattr(lead, 'followup3'):
-            followup_date = lead.followup2.next_followup_date
-            status = {'label': '3rd Follow Up', 'url_name': 'follow_up_3'}
+            if lead.followup2.next_followup_person == user:
+                followup_date = lead.followup2.next_followup_date
+                status = {'label': '3rd Follow Up', 'url_name': 'follow_up_3'}
+                assigned_to_user = True
+
+        # Follow-Up 4
         elif not hasattr(lead, 'followup4'):
-            followup_date = lead.followup3.next_followup_date
-            status = {'label': '4th Follow Up', 'url_name': 'follow_up_4'}
+            if lead.followup3.next_followup_person == user:
+                followup_date = lead.followup3.next_followup_date
+                status = {'label': '4th Follow Up', 'url_name': 'follow_up_4'}
+                assigned_to_user = True
+
+        # Closed
         else:
             followup_date = lead.followup4.next_followup_date
             close_status = lead.followup4.close_status
             status = {'label': f'Closed ({close_status})', 'url_name': None}
 
-        lead_data.append({
-            'lead': lead,
-            'status': status,
-            'followup_date': followup_date
-        })
+        if assigned_to_user:
+            lead_data.append({
+                'lead': lead,
+                'status': status,
+                'followup_date': followup_date
+            })
 
     return render(request, 'my_work.html', {'lead_data': lead_data})
+
 
 
 @login_required
@@ -334,6 +350,7 @@ def follow_up_1(request, lead_id):
     lead = get_object_or_404(Lead, id=lead_id)
     sales_persons = CustomUser.objects.filter(role='Sales')
 
+    # If already done, move to follow_up_2
     if hasattr(lead, 'followup1'):
         return redirect('follow_up_2', lead_id=lead_id)
 
@@ -349,16 +366,21 @@ def follow_up_1(request, lead_id):
             next_followup_date=request.POST.get('next_followup_date'),
         )
 
+        # Assign to next sales person
         user_id = request.POST.get('next_followup_person')
         if user_id:
-            followup.next_followup_person = CustomUser.objects.get(id=user_id)
+            next_person = CustomUser.objects.get(id=user_id)
+            followup.next_followup_person = next_person
+            lead.follow_up_person = next_person  # 🔥 Update assignment
+            lead.save()
+
+        # Handle lead close (if applicable)
+        if request.POST.get("action") == "close":
+            lead.is_closed = True
+            lead.win_status = True if request.POST.get("win_status") == "win" else False
+            lead.save()
 
         followup.save()
-
-        # OPTIONAL: Transfer the lead assignment (if you want to)
-        # lead.follow_up_person = followup.next_followup_person
-        # lead.save()
-
         return redirect('my_work')
 
     return render(request, 'follow_up_1.html', {
@@ -367,47 +389,52 @@ def follow_up_1(request, lead_id):
     })
 
 
-
 @login_required
 def follow_up_2(request, lead_id):
     lead = get_object_or_404(Lead, id=lead_id)
-    sales_persons = CustomUser.objects.filter(role='Sales')  # Or use your role logic
+    sales_persons = CustomUser.objects.filter(role='Sales')
 
+    # If already done, go back
     if hasattr(lead, 'followup2'):
         return redirect('my_work')
 
     if request.method == 'POST':
-        followup = FollowUp2()
-        followup.lead = lead
-        followup.next_followup_date = request.POST.get('next_followup_date')
-        followup.remarks = request.POST.get('remarks')
-        followup.lead_type = request.POST.get('lead_type')
+        followup = FollowUp2(
+            lead=lead,
+            customer_visited=request.POST.get('customer_visited') == 'yes',
+            inspection_done=request.POST.get('inspection_done') == 'yes',
+            quotation_given=request.POST.get('quotation_given') == 'yes',
+            quotation_amount=request.POST.get('quotation_amount') or None,
+            description=request.POST.get('description'),
+            quotation_file=request.FILES.get('quotation_file'),
+            next_followup_date=request.POST.get('next_followup_date'),
+            lead_type=request.POST.get('lead_type'),
+        )
 
-        # Handle reassignment
-        next_user_id = request.POST.get('third_followup_person')
+        # Assign next follow-up person
+        next_user_id = request.POST.get('next_followup_person')
         if next_user_id:
             next_user = CustomUser.objects.get(id=next_user_id)
             followup.next_followup_person = next_user
 
-        # Handle close lead
-        if request.POST.get('close_status'):
-            followup.close_status = 'Win'  # Or 'Loss' based on UI
-            lead.is_closed = True
+            # ✅ Update main lead's assignment
+            lead.follow_up_person = next_user
             lead.save()
-        else:
-            followup.close_status = 'Open'
+
+        # Handle lead closure if checkbox is ticked
+        if request.POST.get('close_status'):
+            lead.is_closed = True
+            lead.win_status = True if request.POST.get("win_status") == "win" else False
+            lead.save()
 
         followup.save()
-
-        # 🚨 This ensures the current user doesn't see this lead anymore
-        # because `my_work` will now show it for the newly assigned person
-
         return redirect('my_work')
 
     return render(request, 'follow_up_2.html', {
         'lead': lead,
-        'sales_persons': sales_persons
+        'sales_persons': sales_persons,
     })
+
 
 
 
@@ -415,19 +442,50 @@ def follow_up_2(request, lead_id):
 @login_required
 def follow_up_3(request, lead_id):
     lead = get_object_or_404(Lead, id=lead_id)
+    sales_persons = CustomUser.objects.filter(role='Sales')
+
     if hasattr(lead, 'followup3'):
         return redirect('follow_up_4', lead_id=lead_id)
+
     if request.method == 'POST':
-        followup = FollowUp3()
-        followup.lead = lead
-        followup.fourth_followup_date = request.POST.get('fourth_followup_date')
-        followup.fourth_followup_person_id = request.POST.get('fourth_followup_person')
-        followup.lead_type = request.POST.get('lead_type')
-        followup.remarks = request.POST.get('remarks')
-        followup.close_status = request.POST.get('close_status')
+        followup = FollowUp3(
+            lead=lead,
+            fourth_followup_date=request.POST.get('fourth_followup_date'),
+            lead_type=request.POST.get('lead_type'),
+            remarks=request.POST.get('remarks'),
+            close_status=request.POST.get('close_status') or 'Open',
+        )
+
+        fourth_user_id = request.POST.get('fourth_followup_person')
+        if fourth_user_id:
+            try:
+                next_user = CustomUser.objects.get(id=fourth_user_id)
+                followup.fourth_followup_person = next_user
+
+                # 🔁 Assign new person to the lead
+                lead.follow_up_person = next_user
+                lead.save()
+            except CustomUser.DoesNotExist:
+                pass  # You could also log this or return an error message
+
+        # ✅ If lead is closed, update status
+        if request.POST.get('close_status') in ['Win', 'Loss']:
+            lead.is_closed = True
+            lead.win_status = True if request.POST.get('close_status') == 'Win' else False
+            lead.save()
+
         followup.save()
-        return redirect('my_work') if followup.close_status else redirect('follow_up_4', lead_id=lead_id)
-    return render(request, 'follow_up_3.html', {'lead': lead})
+
+        # Redirect based on close status
+        if followup.close_status in ['Win', 'Loss']:
+            return redirect('my_work')
+        return redirect('follow_up_4', lead_id=lead_id)
+
+    return render(request, 'follow_up_3.html', {
+        'lead': lead,
+        'sales_persons': sales_persons,
+    })
+
 
 @login_required
 def follow_up_4(request, lead_id):
