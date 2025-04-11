@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Closed Leads</title>
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ccc;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    h2 {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Closed Leads for {{ request.user.username }}</h2>
+
+  {% if closed_leads %}
+    <table>
+      <thead>
+        <tr>
+          <th>Lead Name</th>
+          <th>Mobile</th>
+          <th>Email</th>
+          <th>Closed By</th>
+          <th>Status</th>
+          <th>Enquiry Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for lead in closed_leads %}
+          <tr>
+            <td>{{ lead.full_name }}</td>
+            <td>{{ lead.mobile_number }}</td>
+            <td>{{ lead.email }}</td>
+            <td>{{ lead.sales_person.username }}</td>
+            <td>{% if lead.win_status %}Win{% else %}Loss{% endif %}</td>
+            <td>{{ lead.enquiry_date }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No closed leads found.</p>
+  {% endif %}
+
+</body>
+</html>

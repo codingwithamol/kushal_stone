@@ -352,17 +352,17 @@ from .models import Lead, CustomUser, FollowUp1, FollowUp2, FollowUp3, FollowUp4
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
-
 @login_required
 def follow_up_1(request, lead_id):
     lead = get_object_or_404(Lead, id=lead_id)
     sales_persons = CustomUser.objects.filter(role='Sales')
 
-    # If already done, move to follow_up_2
     if hasattr(lead, 'followup1'):
         return redirect('follow_up_2', lead_id=lead_id)
 
     if request.method == 'POST':
+        is_closing = 'close_lead' in request.POST
+
         followup = FollowUp1(
             lead=lead,
             customer_visited=request.POST.get('customer_visited') == 'yes',
@@ -371,22 +371,28 @@ def follow_up_1(request, lead_id):
             quotation_amount=request.POST.get('quotation_amount') or None,
             description=request.POST.get('description'),
             quotation_file=request.FILES.get('quotation_file'),
-            next_followup_date=request.POST.get('next_followup_date'),
+            next_followup_date=None if is_closing else request.POST.get('next_followup_date'),
+            lead_type=request.POST.get('lead_type'),
+            followup_person=request.user,
         )
 
-        # Assign to next sales person
-        user_id = request.POST.get('next_followup_person')
-        if user_id:
-            next_person = CustomUser.objects.get(id=user_id)
-            followup.next_followup_person = next_person
-            lead.follow_up_person = next_person  # 🔥 Update assignment
-            lead.save()
-
-        # Handle lead close (if applicable)
-        if request.POST.get("action") == "close":
+        if is_closing:
             lead.is_closed = True
-            lead.win_status = True if request.POST.get("win_status") == "win" else False
+            win_status = request.POST.get("win_status")
+            if win_status == "win":
+                lead.win_status = True
+                followup.close_status = "Win"
+            elif win_status == "loss":
+                lead.win_status = False
+                followup.close_status = "Loss"
             lead.save()
+        else:
+            user_id = request.POST.get('next_followup_person')
+            if user_id:
+                next_person = CustomUser.objects.get(id=user_id)
+                followup.next_followup_person = next_person
+                lead.follow_up_person = next_person
+                lead.save()
 
         followup.save()
         return redirect('my_work')
@@ -395,6 +401,7 @@ def follow_up_1(request, lead_id):
         'lead': lead,
         'sales_persons': sales_persons,
     })
+
 
 
 from django.shortcuts import render, get_object_or_404, redirect
@@ -442,7 +449,7 @@ def follow_up_2(request, lead_id):
             lead.win_status = True if close_status == 'Win' else False
             lead.save()
 
-        return redirect('lead_detail', lead_id=lead_id)
+            return redirect('my_work')
 
     return render(request, 'follow_up_2.html', {
         'lead': lead,
@@ -660,4 +667,8 @@ def assign_lead(request, lead_id):
     
     return redirect('my_work')
 
+@login_required
+def closed_leads(request):
+    closed = Lead.objects.filter(is_closed=True, follow_up_person=request.user)
+    return render(request, 'close_lead.html', {'closed_leads': closed})
 
