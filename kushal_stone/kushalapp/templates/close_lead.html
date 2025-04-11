@@ -19,40 +19,79 @@
     h2 {
       margin-top: 20px;
     }
+    .second-box{
+      margin-top: 75px !important;
+    }
+    .form-boxx{
+      box-shadow: 0px 0px 10px rgb(92, 128, 128),inset 0px 0px 10px rgb(255, 255, 255);
+      padding: 50px;
+      border-radius: 10px;
+    }
+    .srcoleble{
+      overflow-x: scroll;
+
+    }
+    .user_name{
+      font-size: 20px;
+      color: rgb(59, 109, 101);
+      transition: ease-in 1s;
+    }
+    .user_name:hover{
+      font-size: 20px;
+      color: rgb(59, 109, 101);
+      font-weight: bold;
+    }
+    .up{
+      font-size: 20px;
+    }
   </style>
 </head>
 <body>
+  {% include 'Sales_Base.html' %}
 
-  <h2>Closed Leads for {{ request.user.username }}</h2>
+  <div class="main">
+    <div class="container">
+      <div class="row second-box">
 
+ <div class="raper form-boxx">
+  <h2 class="text-center">Closed Leads for </h2>
+  <p class="text-center mt-1 mb-5 up" >Closed Leads for <span class="user_name"> {{ request.user.username }}</span></p>
+
+<div class="srcoleble">
   {% if closed_leads %}
-    <table>
-      <thead>
+  <table>
+    <thead>
+      <tr>
+        <th>Lead Name</th>
+        <th>Mobile</th>
+        <th>Email</th>
+        <th>Closed By</th>
+        <th>Status</th>
+        <th>Enquiry Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for lead in closed_leads %}
         <tr>
-          <th>Lead Name</th>
-          <th>Mobile</th>
-          <th>Email</th>
-          <th>Closed By</th>
-          <th>Status</th>
-          <th>Enquiry Date</th>
+          <td>{{ lead.full_name }}</td>
+          <td>{{ lead.mobile_number }}</td>
+          <td>{{ lead.email }}</td>
+          <td>{{ lead.sales_person.username }}</td>
+          <td>{% if lead.win_status %}<span class="btn  btn-success p-2" style="border-radius: 5px; width:150px;">Win</span>{% else %}<span class="btn  btn-danger p-2 " style="border-radius: 5px;  width:150px;">Loss</span>{% endif %}</td>
+          <td>{{ lead.enquiry_date }}</td>
         </tr>
-      </thead>
-      <tbody>
-        {% for lead in closed_leads %}
-          <tr>
-            <td>{{ lead.full_name }}</td>
-            <td>{{ lead.mobile_number }}</td>
-            <td>{{ lead.email }}</td>
-            <td>{{ lead.sales_person.username }}</td>
-            <td>{% if lead.win_status %}Win{% else %}Loss{% endif %}</td>
-            <td>{{ lead.enquiry_date }}</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  {% else %}
-    <p>No closed leads found.</p>
-  {% endif %}
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p>No closed leads found.</p>
+{% endif %}
+</div>
+ </div>
+</div>
+</div>
+</div>
+  {%include 'footer.html'%}
 
 </body>
 </html>

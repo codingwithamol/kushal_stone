@@ -5,31 +5,59 @@
   <title>First Follow-Up</title>
   <style>
     label { display: block; margin-top: 10px; }
-    select, input, textarea { width: 100%; margin-top: 5px; padding: 5px; }
+    select, input, textarea { margin-bottom: 10px;}
     .hidden { display: none; }
+
+    .second-box{
+      margin-top: 75px !important;
+    }
+    .form-boxx{
+      box-shadow: 0px 0px 10px rgb(92, 128, 128),inset 0px 0px 10px rgb(255, 255, 255);
+      padding: 50px;
+      border-radius: 10px;
+    }
+
+    .user_name{
+      font-size: 20px;
+      color: rgb(59, 109, 101);
+    }
+    .user_name:hover{
+      font-size: 20px;
+      color: rgb(59, 109, 101);
+      font-weight: bold;
+    }
+    .up{
+      font-size: 20px;
+    }
   </style>
 </head>
 <body>
+  {% include 'Sales_Base.html' %}
 
-  <h3>First Follow-up for {{ lead.full_name }}</h3>
+  <div class="main">
+    <div class="container">
+      <div class="row second-box">
+        <div class="col-md-3"></div>
+        <div class="col-md-6 form-boxx">
+          <p class="text-center mt-1 mb-5 up" >First Follow-up for <span class="user_name"> {{ lead.full_name }}</span></p>
 
   <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
 
     <label>Customer Visited?</label>
-    <select name="customer_visited">
+    <select class="form-control" name="customer_visited">
       <option value="yes">Yes</option>
       <option value="no">No</option>
     </select>
 
     <label>Inspection onsite done?</label>
-    <select name="inspection_done">
+    <select class="form-control" name="inspection_done">
       <option value="yes">Yes</option>
       <option value="no">No</option>
     </select>
 
     <label>Type of Lead</label>
-    <select name="lead_type">
+    <select class="form-control" name="lead_type">
       <option value="Hot">Hot</option>
       <option value="Warm">Warm</option>
       <option value="Cold">Cold</option>
@@ -37,7 +65,7 @@
     </select>
 
     <label>Quotation Given?</label>
-    <select name="quotation_given" id="quotation_given">
+    <select class="form-control" name="quotation_given" id="quotation_given">
       <option value="yes">Yes</option>
       <option value="no">No</option>
     </select>
@@ -54,15 +82,15 @@
     </div>
 
     <label>Next Follow-up Date</label>
-    <input type="date" name="next_followup_date">
+    <input class="form-control" type="date" name="next_followup_date">
 
     <!-- Outcome and Close Button -->
     <label><strong>Close Lead?</strong></label><br>
-    <input type="checkbox" id="close_lead" name="close_lead">
+    <input  type="checkbox" id="close_lead" name="close_lead">
     <label for="close_lead">Check to close this lead</label>
 
     <div id="outcome_section" class="hidden">
-      <label><strong>Outcome:</strong></label>
+      <label><strong>Outcome:</strong></label><br>
       <label><input type="radio" name="win_status" value="win"> Win</label><br>
       <label><input type="radio" name="win_status" value="lose"> Loss</label><br>
     </div>
@@ -70,7 +98,7 @@
     <!-- Reassign Section -->
     <div id="reassign_section">
       <label><strong>Reassign Lead To:</strong></label>
-      <select name="next_followup_person">
+      <select class="form-control" name="next_followup_person">
         <option value="" disabled selected>Select Sales Person</option>
         {% for person in sales_persons %}
           <option value="{{ person.id }}">{{ person.username }}</option>
@@ -79,7 +107,7 @@
     </div>
 
     <br>
-    <button type="submit">Submit</button>
+    <button type="submit" class="form-control submit-buttons">Submit</button>
   </form>
 
   <script>
@@ -96,6 +124,12 @@
       document.getElementById('reassign_section').style.display = isChecked ? 'none' : 'block';
     });
   </script>
+</div>
+<div class="col-md-3"></div>
+</div>
+</div>
+</div>
+{%include 'footer.html'%}
 
 </body>
 </html>
