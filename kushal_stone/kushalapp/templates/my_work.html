@@ -1,157 +1,171 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <title>My Work - Assigned Leads</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f4f4;
-            padding: 20px;
-        }
+  <meta charset="UTF-8">
+  <title>My Work - Assigned Leads</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f4f4;
+      padding: 20px;
+    }
 
-        h2 {
-            text-align: center;
-            color: #333;
-        }
+    h2 {
+      text-align: center;
+      color: #333;
+    }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 30px;
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
 
-        th, td {
-            padding: 12px 15px;
-            border: 1px solid #ccc;
-            text-align: center;
-        }
+    th,
+    td {
+      padding: 12px 15px;
+      border: 1px solid #ccc;
+      text-align: center;
+    }
 
-        th {
-            background-color: #3498db;
-            color: white;
-        }
+    th {
+      background-color: #3498db;
+      color: white;
+    }
 
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
 
-        .btn {
-            padding: 8px 16px;
-            background-color: #2ecc71;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            text-decoration: none;
-            font-size: 14px;
-        }
+    .btn {
+      padding: 8px 16px;
+      background-color: #2ecc71;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      text-decoration: none;
+      font-size: 14px;
+    }
 
-        .btn:hover {
-            background-color: #27ae60;
-        }
+    .btn:hover {
+      background-color: #27ae60;
+    }
 
-        .btn-disabled {
-            background-color: #bdc3c7;
-            cursor: not-allowed;
-            padding: 8px 16px;
-            border-radius: 5px;
-            font-size: 14px;
-            display: inline-block;
-        }
-    </style>
+    .btn-disabled {
+      background-color: #bdc3c7;
+      cursor: not-allowed;
+      padding: 8px 16px;
+      border-radius: 5px;
+      font-size: 14px;
+      display: inline-block;
+    }
+
+    td {
+      min-width: 150px;
+    }
+  </style>
 </head>
+
 <body>
-
-<h2>My Assigned Leads</h2>
-
-<table>
-    <thead>
-        <tr>
+  {% include 'Sales_Base.html' %}
+<div class="main">
+  <div class="container">
+    <h2>My Assigned Leads</h2>
+    <div class="v" style="overflow-x: scroll;">
+      <table>
+        <thead>
+          <tr>
             <th>Full Name</th>
             <th>Mobile</th>
             <th>Email</th>
             <th>Requirements</th>
             <th>Next Follow-Up Date</th>
             <th>Action</th>
-            
-        </tr>
-    </thead>
-    <tbody>
-    {% for item in lead_data %}
-        <tr>
+
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in lead_data %}
+          <tr>
             <td>{{ item.lead.full_name }}</td>
             <td>{{ item.lead.mobile_number }}</td>
             <td>{{ item.lead.email }}</td>
             <td>{{ item.lead.requirements }}</td>
             <td>
-                {% if item.followup_date %}
-                    {{ item.followup_date|date:"M d, Y" }}
-                {% else %}
-                    N/A
-                {% endif %}
+              {% if item.followup_date %}
+              {{ item.followup_date|date:"M d, Y" }}
+              {% else %}
+              N/A
+              {% endif %}
             </td>
             <td>
               {% if item.status.url_name %}
-                {% with f1=item.lead.followup1 f2=item.lead.followup2 f3=item.lead.followup3 f4=item.lead.followup4 %}
-                  {% if f1 and not f2 %}
-                    {% if f1.next_followup_person == user %}
-                      <a href="{% url item.status.url_name item.lead.id %}" class="btn">{{ item.status.label }}</a>
-                    {% else %}
-                      <span class="btn btn-disabled">Assigned to {{ f1.next_followup_person.username }}</span>
-                    {% endif %}
-                  {% elif f2 and not f3 %}
-                    {% if f2.next_followup_person == user %}
-                      <a href="{% url item.status.url_name item.lead.id %}" class="btn">{{ item.status.label }}</a>
-                    {% else %}
-                      <span class="btn btn-disabled">Assigned to {{ f2.next_followup_person.username }}</span>
-                    {% endif %}
-                  {% elif f3 and not f4 %}
-                    {% if f3.next_followup_person == user %}
-                      <a href="{% url item.status.url_name item.lead.id %}" class="btn">{{ item.status.label }}</a>
-                    {% else %}
-                      <span class="btn btn-disabled">Assigned to {{ f3.next_followup_person.username }}</span>
-                    {% endif %}
-                  {% elif f4 %}
-                    {% if f4.next_followup_person == user %}
-                      <a href="{% url item.status.url_name item.lead.id %}" class="btn">{{ item.status.label }}</a>
-                    {% else %}
-                      <span class="btn btn-disabled">Assigned to {{ f4.next_followup_person.username }}</span>
-                    {% endif %}
-                  {% else %}
-                    {# No previous followup exists — it's the first follow-up #}
-                    {% if item.lead.follow_up_person == user %}
-                      <a href="{% url item.status.url_name item.lead.id %}" class="btn">{{ item.status.label }}</a>
-                    {% else %}
-                      <span class="btn btn-disabled">Assigned to {{ item.lead.follow_up_person.username }}</span>
-                    {% endif %}
-                  {% endif %}
-                {% endwith %}
+              {% with f1=item.lead.followup1 f2=item.lead.followup2 f3=item.lead.followup3 f4=item.lead.followup4 %}
+              {% if f1 and not f2 %}
+              {% if f1.next_followup_person == user %}
+              <a href="{% url item.status.url_name item.lead.id %}" class="btn btn-outline-info" style="width: 210px;">{{ item.status.label }}</a>
               {% else %}
-                <span class="btn btn-disabled">{{ item.status.label }}</span>
+              <span class="btn btn-disabled">Assigned to {{ f1.next_followup_person.username }}</span>
+              {% endif %}
+              {% elif f2 and not f3 %}
+              {% if f2.next_followup_person == user %}
+              <a href="{% url item.status.url_name item.lead.id %}"class="btn btn-outline-info" style="width: 210px;">{{ item.status.label }}</a>
+              {% else %}
+              <span class="btn btn-disabled">Assigned to {{ f2.next_followup_person.username }}</span>
+              {% endif %}
+              {% elif f3 and not f4 %}
+              {% if f3.next_followup_person == user %}
+              <a href="{% url item.status.url_name item.lead.id %}" class="btn btn-outline-info" style="width: 210px;">{{ item.status.label }}</a>
+              {% else %}
+              <span class="btn btn-disabled">Assigned to {{ f3.next_followup_person.username }}</span>
+              {% endif %}
+              {% elif f4 %}
+              {% if f4.next_followup_person == user %}
+              <a href="{% url item.status.url_name item.lead.id %}" class="btn btn-outline-info" style="width: 210px;">{{ item.status.label }}</a>
+              {% else %}
+              <span class="btn btn-disabled">Assigned to {{ f4.next_followup_person.username }}</span>
+              {% endif %}
+              {% else %}
+              {# No previous followup exists — it's the first follow-up #}
+              {% if item.lead.follow_up_person == user %}
+              <a href="{% url item.status.url_name item.lead.id %}" class="btn btn-outline-info" style="width: 210px;">{{ item.status.label }}</a>
+              {% else %}
+              <span class="btn btn-disabled">Assigned to {{ item.lead.follow_up_person.username }}</span>
+              {% endif %}
+              {% endif %}
+              {% endwith %}
+              {% else %}
+              <span class="btn btn-disabled">{{ item.status.label }}</span>
               {% endif %}
             </td>
-            
-            <td>
+
+            <!-- <td>
               {% if item.lead.is_closed %}
-                  {% if item.lead.win_status %}
-                      <span style="color: green; font-weight: bold;">Won</span>
-                  {% else %}
-                      <span style="color: red; font-weight: bold;">Lost</span>
-                  {% endif %}
+              {% if item.lead.win_status %}
+              <span style="color: green; font-weight: bold;">Won</span>
+              {% else %}
+              <span style="color: red; font-weight: bold;">Lost</span>
               {% endif %}
-          </td>
-          
-        </tr>
-    {% empty %}
-        <tr>
+              {% endif %}
+            </td> -->
+
+          </tr>
+          {% empty %}
+          <tr>
             <td colspan="7">No leads assigned.</td>
-        </tr>
-    {% endfor %}
-    </tbody>
-</table>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  </div>
+  {%include 'footer.html'%}
 
 </body>
+
 </html>
