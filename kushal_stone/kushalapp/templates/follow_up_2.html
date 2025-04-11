@@ -1,95 +1,36 @@
-<form method="post" enctype="multipart/form-data">
+<form method="post">
   {% csrf_token %}
   <h3>Second Follow-up for {{ lead.full_name }}</h3>
 
-  <label><strong>Customer Visited?</strong></label><br>
-  <select name="customer_visited" required>
-    <option value="yes">Yes</option>
-    <option value="no">No</option>
-  </select><br><br>
-
-  <label><strong>Inspection onsite done?</strong></label><br>
-  <select name="inspection_done" required>
-    <option value="yes">Yes</option>
-    <option value="no">No</option>
-  </select><br><br>
-
-  <label><strong>Type of Lead:</strong></label><br>
+  <label>Type of Lead</label>
   <select name="lead_type" required>
     <option value="Hot">Hot</option>
     <option value="Warm">Warm</option>
     <option value="Cold">Cold</option>
     <option value="Not Interested">Not Interested</option>
-  </select><br><br>
+  </select>
 
-  <label><strong>Quotation Given?</strong></label><br>
-  <select name="quotation_given" id="quotation_given" required>
-    <option value="yes">Yes</option>
-    <option value="no">No</option>
-  </select><br><br>
+  <label>Remarks</label>
+  <textarea name="remarks" rows="4" required></textarea>
 
-  <div id="quotation_fields" style="display:none">
-    <label><strong>Enter Quotation Amount:</strong></label><br>
-    <input type="number" name="quotation_amount"><br><br>
+  <label>Next Follow-Up Date</label>
+  <input type="date" name="next_followup_date" required>
 
-    <label><strong>Description:</strong></label><br>
-    <textarea name="description" rows="3" cols="50"></textarea><br><br>
-
-    <label><strong>Upload Quotation File:</strong></label><br>
-    <input type="file" name="quotation_file"><br><br>
-  </div>
-
-  <label><strong>Next Follow-Up Date:</strong></label><br>
-  <input type="date" name="next_followup_date"><br><br>
-
-  <label><strong>Assign Next Follow-Up To:</strong></label><br>
+  <label><strong>Reassign Lead To:</strong></label>
   <select name="next_followup_person" required>
     <option value="" disabled selected>Select Sales Person</option>
     {% for person in sales_persons %}
       <option value="{{ person.id }}">{{ person.username }}</option>
     {% endfor %}
-  </select><br><br>
-
-  <label><strong>Close Lead:</strong></label><br>
-  <input type="radio" name="close_status" value="Win"> Win<br>
-  <input type="radio" name="close_status" value="Loss"> Loss<br>
-  <input type="radio" name="close_status" value="Open" checked> Keep Open<br><br>
-
-  <button type="submit" class="btn btn-primary">Submit Follow-Up</button>
-</form>
-
-<hr>
-
-<!-- Reassign Lead -->
-<form method="post" action="{% url 'assign_lead' lead.id %}">
-  {% csrf_token %}
-  <label><strong>Reassign Lead To:</strong></label><br>
-  <select name="new_assignee" required>
-    <option value="" disabled selected>Select Sales Person</option>
-    {% for person in sales_persons %}
-      <option value="{{ person.id }}">{{ person.username }}</option>
-    {% endfor %}
   </select>
-  <button type="submit">Assign</button>
+
+  <!-- Close Lead block -->
+  {% if not lead.is_closed %}
+    <label><strong>Outcome:</strong></label><br>
+    <label><input type="radio" name="win_status" value="win" required> Win</label><br>
+    <label><input type="radio" name="win_status" value="lose"> Lose</label><br><br>
+    <button type="submit" name="action" value="close" style="background-color: red; color: white;">Close Lead</button>
+  {% endif %}
+
+  <br><button type="submit">Submit</button>
 </form>
-
-<hr>
-
-<!-- Close Lead -->
-{% if not lead.is_closed %}
-  <form method="post" action="{% url 'close_lead' lead.id %}">
-    {% csrf_token %}
-    <button type="submit" style="background-color: red; color: white; padding: 5px 10px; border: none; border-radius: 5px;">
-      Close Lead
-    </button>
-  </form>
-{% else %}
-  <p style="color: green;"><strong>Status:</strong> Closed</p>
-{% endif %}
-
-<script>
-  document.getElementById('quotation_given').addEventListener('change', function () {
-    const display = this.value === 'yes' ? 'block' : 'none';
-    document.getElementById('quotation_fields').style.display = display;
-  });
-</script>

@@ -85,6 +85,8 @@ class Lead(models.Model):
     follow_up_person = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='follow_up_person')
     is_closed = models.BooleanField(default=False)
     win_status = models.BooleanField(null=True, blank=True)  
+    # assigned_to = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_leads')
+
 
     def __str__(self):
         return self.full_name

@@ -55,14 +55,7 @@
     <label><input type="radio" name="win_status" value="win" required> Win</label><br>
     <label><input type="radio" name="win_status" value="lose"> Lose</label><br><br>
     <button type="submit" name="action" value="close" style="background-color: red; color: white;">Close Lead</button>
-  {% else %}
-    <p style="color: green;"><strong>Status:</strong>
-      {% if lead.win_status %}
-        <span style="color: green;">Won</span>
-      {% else %}
-        <span style="color: red;">Lost</span>
-      {% endif %}
-    </p>
+  
   {% endif %}
 
   <br><button type="submit">Submit</button>
