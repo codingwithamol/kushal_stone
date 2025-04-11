@@ -2,101 +2,100 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>First Follow-Up</title>
   <style>
-    .second-box{
-      margin-top: 75px !important;
-    }
-    .form-boxx{
-      box-shadow: 0px 0px 10px rgb(92, 128, 128),inset 0px 0px 10px rgb(255, 255, 255);
-      padding: 50px;
-      border-radius: 10px;
-    }
+    label { display: block; margin-top: 10px; }
+    select, input, textarea { width: 100%; margin-top: 5px; padding: 5px; }
+    .hidden { display: none; }
   </style>
 </head>
 <body>
-  {% include 'Sales_Base.html' %}
 
-<div class="main">
-  <div class="container">
-    <div class="row second-box">
-      <div class="col-md-3"></div>
-      <div class="col-md-6 form-boxx">
-        <form method="post" enctype="multipart/form-data">
-          {% csrf_token %}
-          <h2 class="text-center mt-1 mb-5">First Follow-up for {{ lead.full_name }}</h2>
-        
-          <label>Customer Visited?</label>
-          <select  class="form-control" name="customer_visited">
-            <option value="yes">Yes</option>
-            <option value="no">No</option>
-          </select>
-        
-          <label>Inspection onsite done?</label>
-          <select  class="form-control" name="inspection_done">
-            <option value="yes">Yes</option>
-            <option value="no">No</option>
-          </select>
-        
-          <label>Type of Lead</label>
-          <select  class="form-control" name="lead_type">
-            <option value="Hot">Hot</option>
-            <option value="Warm">Warm</option>
-            <option value="Cold">Cold</option>
-            <option value="Not Interested">Not Interested</option>
-          </select>
-        
-          <label>Quotation Given?</label>
-          <select  class="form-control" name="quotation_given" id="quotation_given">
-            <option value="yes">Yes</option>
-            <option value="no">No</option>
-          </select>
-        
-          <div id="quotation_fields" style="display:none">
-            <label>Enter Quotation Amount</label>
-            <input type="number" name="quotation_amount">
-        
-            <label>Description</label>
-            <textarea name="description"></textarea>
-        
-            <label>Upload Quotation File</label>
-            <input type="file" name="quotation_file">
-          </div>
-        
-          
-          
-          <label><strong>Reassign Lead To:</strong></label>
-        <select  class="form-control" name="next_followup_person" required>
-          <option value="" disabled selected>Select Sales Person</option>
-          {% for person in sales_persons %}
-            <option value="{{ person.id }}">{{ person.username }}</option>
-          {% endfor %}
-        </select>
-      
-        <!-- Close Lead block -->
-        {% if not lead.is_closed %}
-          <label><strong>Outcome:</strong></label><br>
-          <label><input type="radio" name="win_status" value="win" required> Win</label><br>
-          <label><input type="radio" name="win_status" value="lose"> Lose</label><br><br>
-          <button type="submit" name="action" value="close"  class="btn btn-outline-danger form-control">Close Lead</button>
-        
-        {% endif %}
-      
-        <br><button type="submit" class="submit-buttons">Submit</button>
-      </form>
-        <script>
-          document.getElementById('quotation_given').addEventListener('change', function () {
-            const display = this.value === 'yes' ? 'block' : 'none';
-            document.getElementById('quotation_fields').style.display = display;
-          });
-        </script>
-      </div>
-      <div class="col-md-3"></div>
+  <h3>First Follow-up for {{ lead.full_name }}</h3>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <label>Customer Visited?</label>
+    <select name="customer_visited">
+      <option value="yes">Yes</option>
+      <option value="no">No</option>
+    </select>
+
+    <label>Inspection onsite done?</label>
+    <select name="inspection_done">
+      <option value="yes">Yes</option>
+      <option value="no">No</option>
+    </select>
+
+    <label>Type of Lead</label>
+    <select name="lead_type">
+      <option value="Hot">Hot</option>
+      <option value="Warm">Warm</option>
+      <option value="Cold">Cold</option>
+      <option value="Not Interested">Not Interested</option>
+    </select>
+
+    <label>Quotation Given?</label>
+    <select name="quotation_given" id="quotation_given">
+      <option value="yes">Yes</option>
+      <option value="no">No</option>
+    </select>
+
+    <div id="quotation_fields" class="hidden">
+      <label>Enter Quotation Amount</label>
+      <input type="number" name="quotation_amount">
+
+      <label>Description</label>
+      <textarea name="description"></textarea>
+
+      <label>Upload Quotation File</label>
+      <input type="file" name="quotation_file">
     </div>
-  </div>
-</div>
-{%include 'footer.html'%}
+
+    <label>Next Follow-up Date</label>
+    <input type="date" name="next_followup_date">
+
+    <!-- Outcome and Close Button -->
+    <label><strong>Close Lead?</strong></label><br>
+    <input type="checkbox" id="close_lead" name="close_lead">
+    <label for="close_lead">Check to close this lead</label>
+
+    <div id="outcome_section" class="hidden">
+      <label><strong>Outcome:</strong></label>
+      <label><input type="radio" name="win_status" value="win"> Win</label><br>
+      <label><input type="radio" name="win_status" value="lose"> Loss</label><br>
+    </div>
+
+    <!-- Reassign Section -->
+    <div id="reassign_section">
+      <label><strong>Reassign Lead To:</strong></label>
+      <select name="next_followup_person">
+        <option value="" disabled selected>Select Sales Person</option>
+        {% for person in sales_persons %}
+          <option value="{{ person.id }}">{{ person.username }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <br>
+    <button type="submit">Submit</button>
+  </form>
+
+  <script>
+    // Toggle quotation fields
+    document.getElementById('quotation_given').addEventListener('change', function () {
+      const display = this.value === 'yes' ? 'block' : 'none';
+      document.getElementById('quotation_fields').style.display = display;
+    });
+
+    // Toggle outcome and reassign sections
+    document.getElementById('close_lead').addEventListener('change', function () {
+      const isChecked = this.checked;
+      document.getElementById('outcome_section').style.display = isChecked ? 'block' : 'none';
+      document.getElementById('reassign_section').style.display = isChecked ? 'none' : 'block';
+    });
+  </script>
 
 </body>
 </html>
