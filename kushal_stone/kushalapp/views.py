@@ -667,6 +667,7 @@ def assign_lead(request, lead_id):
     
     return redirect('my_work')
 
+#close lead function
 @login_required
 def closed_leads(request):
     closed = Lead.objects.filter(is_closed=True, follow_up_person=request.user)
