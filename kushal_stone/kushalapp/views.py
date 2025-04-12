@@ -60,6 +60,8 @@ def logout_view(request):
 @login_required
 def admin_dashboard(request):
     return render(request, 'admin_dashboard.html')
+
+
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
@@ -71,7 +73,7 @@ def sales_dashboard(request):
     user = request.user
 
     total_leads = Lead.objects.count()
-    completed_leads = Lead.objects.filter(is_closed=True).count()
+    completed_leads = Lead.objects.filter(follow_up_person=user,is_closed=True).count()
     my_work_total = Lead.objects.filter(follow_up_person=user, is_closed=False).count()
 
     # Initialize lead type data
