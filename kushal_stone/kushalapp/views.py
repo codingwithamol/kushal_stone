@@ -60,10 +60,44 @@ def logout_view(request):
 @login_required
 def admin_dashboard(request):
     return render(request, 'admin_dashboard.html')
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.db.models import Count
+from .models import Lead
+from .models import FollowUp1, FollowUp2, FollowUp3, FollowUp4 , FollowUp5, FollowUp6 , FollowUp7 , FollowUp8 , FollowUp9 , FollowUp10 , FollowUpBase
 
 @login_required
 def sales_dashboard(request):
-    return render(request, 'sales_dashboard.html')
+    user = request.user
+
+    total_leads = Lead.objects.count()
+    completed_leads = Lead.objects.filter(is_closed=True).count()
+    my_work_total = Lead.objects.filter(follow_up_person=user, is_closed=False).count()
+
+    # Initialize lead type data
+    lead_types = ['Hot', 'Warm', 'Cold', 'Not Interested']
+    lead_type_data = {lt: 0 for lt in lead_types}
+
+    for model in [FollowUp1, FollowUp2, FollowUp3, FollowUp4]:
+        qs = model.objects.values('lead_type').annotate(count=Count('id'))
+        for entry in qs:
+            lead_type = entry['lead_type']
+            if lead_type in lead_type_data:
+                lead_type_data[lead_type] += entry['count']
+
+    # Prepare lists for chart
+    lead_type_labels = list(lead_type_data.keys())
+    lead_type_counts = list(lead_type_data.values())
+
+    context = {
+        'total_leads': total_leads,
+        'completed_leads': completed_leads,
+        'my_work_total': my_work_total,
+        'lead_type_labels': lead_type_labels,
+        'lead_type_counts': lead_type_counts,
+    }
+
+    return render(request, 'sales_dashboard.html', context)
 
 @login_required
 def operations_dashboard(request):

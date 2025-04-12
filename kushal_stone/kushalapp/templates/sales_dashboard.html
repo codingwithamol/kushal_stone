@@ -1,40 +1,105 @@
-{% load static%}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <title>Sales Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+  <style>
+    .card h3 {
+      font-size: 2rem;
+      color: #007bff;
+    }
+    .chart-container {
+      position: relative;
+      height: 300px;
+      width: 100%;
+    }
+  </style>
 </head>
-<style>
-    .headingrow{
-        margin-top: 78px !important;
-         
-    }
-    .subhaiding{
-        background: linear-gradient(to right,  #6a11cb,    #6a11cb);
-        background-position: 0;
- -webkit-background-clip: text;
- -webkit-text-fill-color: transparent;
-    }
-</style>
 <body>
-    {% include 'Sales_Base.html' %}
 
-    <div class="main" style="min-height: 100vh;">
-        <div class="container-fluid   ">
-            <div class="row  headingrow">
-                <div class="col-md-12 text-center">
-                    <p ><span class="text-info">Welcome</span>, <span class="subhaiding">{{ user.username }}</span> <span class="text-info">! You are logged in as an Admin.</span></p>
+{% include 'Sales_Base.html' %}
 
-
-                </div>
-            </div>
-        </div>
+<div class="container mt-5 pt-5">
+  <!-- Dashboard cards -->
+  <div class="row text-center">
+    <div class="col-md-4 mb-4">
+      <div class="card shadow-sm p-4">
+        <h5>Total Leads</h5>
+        <h3>{{ total_leads }}</h3>
+      </div>
     </div>
-    {%include 'footer.html'%}
+    <div class="col-md-4 mb-4">
+      <div class="card shadow-sm p-4">
+        <h5>Completed Leads</h5>
+        <h3>{{ completed_leads }}</h3>
+      </div>
+    </div>
+    <div class="col-md-4 mb-4">
+      <div class="card shadow-sm p-4">
+        <h5>My Work</h5>
+        <h3>{{ my_work_total }}</h3>
+      </div>
+    </div>
+  </div>
 
+  <!-- Chart -->
+  <div class="row mt-4">
+    <div class="col-md-8 offset-md-2">
+      <div class="card shadow p-4">
+        <h5 class="text-center mb-4">Lead Type Distribution</h5>
+        <div class="chart-container">
+          <canvas id="leadTypeChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Chart script -->
+<script>
+  const ctx = document.getElementById('leadTypeChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: {{ lead_type_labels|safe }},
+      datasets: [{
+        label: 'Lead Types',
+        data: {{ lead_type_counts|safe }},
+        backgroundColor: ['#FF6B6B', '#4D96FF', '#FFD93D', '#6BCB77'],
+        borderRadius: 10,
+        barThickness: 40
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#fff',
+          titleColor: '#000',
+          bodyColor: '#000',
+          borderColor: '#ccc',
+          borderWidth: 1
+        }
+      },
+      scales: {
+        x: {
+          ticks: { font: { size: 14 } },
+          grid: { display: false }
+        },
+        y: {
+          beginAtZero: true,
+          ticks: { stepSize: 1 },
+          grid: { color: '#eee' }
+        }
+      }
+    }
+  });
+</script>
+
+{% include 'footer.html' %}
 </body>
-
 </html>
