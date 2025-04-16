@@ -90,6 +90,9 @@ class Lead(models.Model):
 
     def __str__(self):
         return self.full_name
+    
+from django.utils import timezone
+
 
 class FollowUpBase(models.Model):
     lead = models.OneToOneField(Lead, on_delete=models.CASCADE)
@@ -111,7 +114,7 @@ class FollowUpBase(models.Model):
         blank=True,
         null=True
     )
-
+    created_at = models.DateTimeField(default=timezone.now)
     class Meta:
         abstract = True
 

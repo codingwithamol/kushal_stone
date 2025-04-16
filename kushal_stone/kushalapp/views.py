@@ -369,6 +369,26 @@ def my_work(request):
 
 
 
+from django.shortcuts import render, get_object_or_404
+from .models import Lead, FollowUp1, FollowUp2, FollowUp3, FollowUp4, FollowUp5, FollowUp6, FollowUp7, FollowUp8, FollowUp9, FollowUp10
+
+def work_history(request, lead_id):
+    lead = get_object_or_404(Lead, id=lead_id)
+
+    followups = []
+    followup_models = [FollowUp1, FollowUp2, FollowUp3, FollowUp4, FollowUp5, FollowUp6, FollowUp7, FollowUp8, FollowUp9, FollowUp10]
+
+    for model in followup_models:
+        try:
+            followup = model.objects.get(lead=lead)
+        except model.DoesNotExist:
+            followup = None
+        followups.append(followup)
+
+    return render(request, 'work_history.html', {
+        'lead': lead,
+        'followups': followups,
+    })
 
 
 @login_required

@@ -37,6 +37,8 @@ urlpatterns = [
     path('close-lead/<int:lead_id>/', views.close_lead, name='close_lead'),
     path('assign-lead/<int:lead_id>/', views.assign_lead, name='assign_lead'),
     path('closed-leads/', views.closed_leads, name='closed_leads'),
+    path('work_history/<int:lead_id>/', views.work_history, name='work_history'),
+
 
 
 
