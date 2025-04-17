@@ -2,41 +2,88 @@
 <html>
 <head>
   <title>Follow Up 3</title>
+  <style>
+    label { display: block;   }
+     .hidden { display: none; }
+
+    .second-box{
+      margin-top: 75px !important;
+    }
+    .form-boxx{
+      box-shadow: 0px 0px 10px rgb(92, 128, 128),inset 0px 0px 10px rgb(255, 255, 255);
+      padding: 50px;
+      border-radius: 10px;
+    }
+
+    .user_name{
+      font-size: 20px;
+      color: rgb(59, 109, 101);
+    }
+    .user_name:hover{
+      font-size: 20px;
+      color: rgb(59, 109, 101);
+      font-weight: bold;
+    }
+    .up{
+      font-size: 20px;
+    }
+  </style>
 </head>
 <body>
-  <h2>Follow Up 3 for {{ lead.full_name }}</h2>
+ 
 
-  <form method="POST">
-    {% csrf_token %}
 
-    <label><strong>Fourth Follow-Up Date:</strong></label><br>
-    <input type="date" name="fourth_followup_date" required><br><br>
+  {% include 'Sales_Base.html' %}
 
-    <label><strong>Assign Fourth Follow-Up To:</strong></label><br>
-    <select name="fourth_followup_person" required>
-      <option value="" disabled selected>Select Sales Person</option>
-      {% for person in sales_persons %}
-        <option value="{{ person.id }}">{{ person.username }}</option>
-      {% endfor %}
-    </select><br><br>
+  <div class="main">
+    <div class="container">
+      <div class="row second-box">
+        <div class="col-md-3"></div>
+        <div class="col-md-6 form-boxx">
+          <p class="text-center mt-1 mb-5 up" >Follow Up 3 for <span class="user_name"> {{ lead.full_name }}</span></p>
 
-    <label><strong>Type of Lead:</strong></label><br>
-    <select name="lead_type" required>
-      <option value="Hot">Hot</option>
-      <option value="Warm">Warm</option>
-      <option value="Cold">Cold</option>
-      <option value="Not Interested">Not Interested</option>
-    </select><br><br>
+          <form method="POST">
+            {% csrf_token %}
+        
+            <label><strong>Fourth Follow-Up Date:</strong></label><br>
+            <input class="form-control" type="date" name="fourth_followup_date" required><br><br>
+        
+            <label><strong>Assign Fourth Follow-Up To:</strong></label><br>
+            <select class="form-control" name="fourth_followup_person" required>
+              <option value="" disabled selected>Select Sales Person</option>
+              {% for person in sales_persons %}
+                <option value="{{ person.id }}">{{ person.username }}</option>
+              {% endfor %}
+            </select><br><br>
+        
+            <label><strong>Type of Lead:</strong></label><br>
+            <select class="form-control" name="lead_type" required>
+              <option value="Hot">Hot</option>
+              <option value="Warm">Warm</option>
+              <option value="Cold">Cold</option>
+              <option value="Not Interested">Not Interested</option>
+            </select><br><br>
+        
+            <label><strong>Remarks:</strong></label><br>
+            <textarea class="form-control" name="remarks" rows="2"  required></textarea><br><br>
+        
+            <label><strong>Close Lead:</strong></label><br>
+            <input type="radio" name="close_status" value="Win"> Win<br>
+            <input type="radio" name="close_status" value="Loss"> Loss<br>
+            <input type="radio" name="close_status" value="Open" checked> Keep Open<br><br>
+        
+            <button type="submit" class="submit-buttons">Submit</button>
+          </form>
+        
+        
 
-    <label><strong>Remarks:</strong></label><br>
-    <textarea name="remarks" rows="4" cols="50" required></textarea><br><br>
+   
+</div>
+<div class="col-md-3"></div>
+</div>
+</div>
+</div>
+{%include 'footer.html'%}
 
-    <label><strong>Close Lead:</strong></label><br>
-    <input type="radio" name="close_status" value="Win"> Win<br>
-    <input type="radio" name="close_status" value="Loss"> Loss<br>
-    <input type="radio" name="close_status" value="Open" checked> Keep Open<br><br>
-
-    <button type="submit" style="padding: 6px 15px;">Submit</button>
-  </form>
 </body>
 </html>

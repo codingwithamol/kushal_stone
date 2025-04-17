@@ -8,6 +8,35 @@
             padding: 15px;
             margin-bottom: 15px;
         }
+        .content-wrapper {
+          
+            margin-top: 100px;
+            
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #333;
+        }
+
+        .table {
+            margin-top: 20px;
+           
+        }
+        html,body,.gg{
+            min-height: 100%;
+        }
+    
+        .container{
+            padding: 30px;
+            border-radius: 5px !important;
+            box-shadow: 0px 0px 5px rgb(255, 255, 255);
+         }
+        .table-responsive {
+            overflow-x: auto;
+            white-space: nowrap;
+
+        }
     </style>
 </head>
 <body>
@@ -15,38 +44,49 @@
     <h1>Work History for {{ lead.full_name }}</h1>
 
     {% for followup in followups %}
-        <div class="followup-section">
-            <h2>Follow Up {{ forloop.counter }}</h2>
-
-            {% if followup %}
-                <p><strong>Followup Person:</strong> {{ followup.followup_person }}</p>
-                <p><strong>Lead Type:</strong> {{ followup.lead_type }}</p>
-                <p><strong>Remarks:</strong> {{ followup.remarks }}</p>
-                <p><strong>Close Status:</strong> {{ followup.close_status }}</p>
-                <p><strong>Created At:</strong> {{ followup.created_at }}</p>
-
-                {% if followup.customer_visited is not None %}
-                    <p><strong>Customer Visited:</strong> {{ followup.customer_visited }}</p>
-                    <p><strong>Inspection Done:</strong> {{ followup.inspection_done }}</p>
-                    <p><strong>Quotation Given:</strong> {{ followup.quotation_given }}</p>
-                    <p><strong>Quotation Amount:</strong> ₹{{ followup.quotation_amount }}</p>
-                    <p><strong>Description:</strong> {{ followup.description }}</p>
-                    {% if followup.quotation_file %}
-                        <p><strong>Quotation File:</strong> <a href="{{ followup.quotation_file.url }}">Download</a></p>
-                    {% endif %}
-                {% endif %}
-
-                {% if followup.next_followup_date %}
-                    <p><strong>Next Followup Date:</strong> {{ followup.next_followup_date }}</p>
-                {% endif %}
-                {% if followup.next_followup_person %}
-                    <p><strong>Next Followup Person:</strong> {{ followup.next_followup_person }}</p>
-                {% endif %}
-
-            {% else %}
-                <p><em>No data available for this follow-up.</em></p>
-            {% endif %}
+    <div class="gg">
+        <div class="content-wrapper ">
+            <div class="container bg-light">
+     
+                <div class="table-responsive">
+                    <div class="followup-section">
+                        <h2>Follow Up {{ forloop.counter }}</h2>
+            
+                        {% if followup %}
+                            <p><strong>Followup Person:</strong> {{ followup.followup_person }}</p>
+                            <p><strong>Lead Type:</strong> {{ followup.lead_type }}</p>
+                            <p><strong>Remarks:</strong> {{ followup.remarks }}</p>
+                            <p><strong>Close Status:</strong> {{ followup.close_status }}</p>
+                            <p><strong>Created At:</strong> {{ followup.created_at }}</p>
+            
+                            {% if followup.customer_visited is not None %}
+                                <p><strong>Customer Visited:</strong> {{ followup.customer_visited }}</p>
+                                <p><strong>Inspection Done:</strong> {{ followup.inspection_done }}</p>
+                                <p><strong>Quotation Given:</strong> {{ followup.quotation_given }}</p>
+                                <p><strong>Quotation Amount:</strong> ₹{{ followup.quotation_amount }}</p>
+                                <p><strong>Description:</strong> {{ followup.description }}</p>
+                                {% if followup.quotation_file %}
+                                    <p><strong>Quotation File:</strong> <a href="{{ followup.quotation_file.url }}">Download</a></p>
+                                {% endif %}
+                            {% endif %}
+            
+                            {% if followup.next_followup_date %}
+                                <p><strong>Next Followup Date:</strong> {{ followup.next_followup_date }}</p>
+                            {% endif %}
+                            {% if followup.next_followup_person %}
+                                <p><strong>Next Followup Person:</strong> {{ followup.next_followup_person }}</p>
+                            {% endif %}
+            
+                        {% else %}
+                            <p><em>No data available for this follow-up.</em></p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+            </div>
         </div>
+    </div>
+       
     {% endfor %}
 
 </body>
