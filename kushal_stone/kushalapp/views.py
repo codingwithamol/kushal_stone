@@ -231,7 +231,7 @@ def add_lead(request):
             'full_name', 'mobile_number', 'email', 'requirements',
             'address', 'architect_name', 'architect_number',
             'source', 'enquiry_date', 'sales_person',
-            'customer_segment', 'follow_up_date', 'follow_up_person'
+            'customer_segment', 'next_followup_date', 'follow_up_person'
         ]
 
         for field in required_fields:
@@ -264,7 +264,7 @@ def add_lead(request):
             enquiry_date=data['enquiry_date'],
             sales_person_id=data['sales_person'],
             customer_segment=data['customer_segment'],
-            follow_up_date=data['follow_up_date'],
+            next_followup_date=data['next_followup_date'],
             follow_up_person_id=data['follow_up_person']
         )
 
