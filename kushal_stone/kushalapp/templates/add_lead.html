@@ -1,147 +1,182 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Add Lead</title>
     <style>
-        .error { color: red; }
-        .hidden { display: none; }
-        .main{
+        .error {
+            color: red;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .main {
             min-height: 100vh;
-          }
-          .form-row{
+        }
+
+        .form-row {
             margin-top: 70px;
-          }
-          label{
+        }
+
+        label {
             font-weight: bold;
-          }
-          .form-box {
+        }
+
+        .form-box {
             box-shadow: 0px 0px 46px #dcdcdc;
             border-radius: 10px;
             padding-top: 20px;
-           
-          }
-          form{
+
+        }
+
+        form {
             padding-right: 20px;
             padding-left: 20px;
 
-            
 
-          }
+
+        }
     </style>
 </head>
+
 <body>
 
     {% include 'Sales_Base.html' %}
-<div class="main">
-    <div class="container form-row">
-        <div class="row ">
-            <div class="col-md-3"></div>
-            <div class="col-md-6 col-12 form-box">
-                
-    <h2 class="text-center mt-2 ">Add New Lead</h2>
-                <a href="{% url 'view_leads' %}" class="btn btn-outline-dark form-control mt-5"  >View All Leads</a><br><br>
-    
-                <form method="post" id="leadForm">
-                    {% csrf_token %}
-                
-                    <label>Full Name:</label>
-                    <input class="form-control" type="text" name="full_name" required><br>
-                
-                    <label>Mobile Number:</label>
-                    <input class="form-control" type="text" name="mobile_number" required><br>
-                
-                    <label>Email:</label>
-                    <input class="form-control" type="email" name="email" required><br>
-                
-                    <label>Address:</label>
-                    <textarea class="form-control" name="address" required></textarea><br>
-                
-                    <label>Architect Name:</label>
-                    <input class="form-control" type="text" name="architect_name"><br>
-                
-                    <label>Architect Contact:</label>
-                    <input class="form-control" type="text" name="architect_number"><br>
-                
-                    <label>Enquiry Date:</label>
-                    <input class="form-control" type="date" name="enquiry_date"><br>
-                
-                    <label>Sales Person:</label>
-                    <select name="sales_person" class="form-control">
-                        {% for person in sales_persons %}
+    <div class="main">
+        <div class="container form-row">
+            <div class="row ">
+                <div class="col-md-3"></div>
+                <div class="col-md-6 col-12 form-box">
+
+                    <h2 class="text-center mt-2 ">Add New Lead</h2>
+                    <a href="{% url 'view_leads' %}" class="btn btn-outline-dark form-control mt-5">View All
+                        Leads</a><br><br>
+
+                    <form method="post" id="leadForm">
+                        {% csrf_token %}
+
+                        <label>Full Name:</label>
+                        <input class="form-control" type="text" name="full_name" required><br>
+
+                        <label>Mobile Number:</label>
+                        <input class="form-control" type="text" name="mobile_number" required><br>
+
+                        <label>Email:</label>
+                        <input class="form-control" type="email" name="email" required><br>
+
+                        <label>Address:</label>
+                        <textarea class="form-control" name="address" required></textarea><br>
+
+                        <label>Architect Name:</label>
+                        <input class="form-control" type="text" name="architect_name"><br>
+
+                        <label>Architect Contact:</label>
+                        <input class="form-control" type="text" name="architect_number"><br>
+
+                        <label>Enquiry Date:</label>
+                        <input class="form-control" type="date" name="enquiry_date"><br>
+
+                        <label>Sales Person:</label>
+                        <select name="sales_person" class="form-control">
+                            {% for person in sales_persons %}
                             <option value="{{ person.id }}">{{ person.username }}</option>
-                        {% endfor %}
-                    </select><br>
-                
-                    <label>Follow-Up Person:</label>
-                    <select class="form-control" name="follow_up_person">
-                        {% for person in follow_up_persons %}
+                            {% endfor %}
+                        </select><br>
+
+                        <label>Follow-Up Person:</label>
+                        <select class="form-control" name="follow_up_person">
+                            {% for person in follow_up_persons %}
                             <option value="{{ person.id }}">{{ person.username }}</option>
-                        {% endfor %}
-                    </select><br>
-                
-                    <label>Customer Segment:</label>
-                    <select class="form-control" name="customer_segment">
-                        <option value="Retail/individual">Retail/individual</option>
-                        <option value="B2B">B2B</option>
-                        <option value="Reseller">Reseller</option>
-                        <option value="Commercial/Corporate">Commercial/Corporate</option>
-                    </select><br>
-                
-                    <label>Follow-Up Date:</label>
-                    <input class="form-control" type="date" name="next_followup_date"><br>
-                
-                    <label>Source:</label>
-                    <select class="form-control" name="source" onchange="toggleOtherSource(this)">
-                        <option value="">--Select--</option>
-                        <option value="Instagram">Instagram</option>
-                        <option value="Facebook">Facebook</option>
-                        <option value="Indiamart">Indiamart</option>
-                        <option value="Google">Google</option>
-                        <option value="Reference">Reference</option>
-                        <option value="Other">Other</option>
-                    </select><br>
-                
-                    <div id="other_source_field" style="display:none;">
-                        <label>Other Source:</label>
-                        <input class="form-control" type="text" name="source_other"><br>
+                            {% endfor %}
+                        </select><br>
+
+                        <label>Customer Segment:</label>
+                        <select class="form-control" name="customer_segment">
+                            <option value="Retail/individual">Retail/individual</option>
+                            <option value="B2B">B2B</option>
+                            <option value="Reseller">Reseller</option>
+                            <option value="Commercial/Corporate">Commercial/Corporate</option>
+                        </select><br>
+
+                        <label>Follow-Up Date:</label>
+                        <input class="form-control" type="date" name="next_followup_date"><br>
+
+                        <label>Source:</label>
+                        <select class="form-control" name="source" onchange="toggleOtherSource(this)">
+                            <option value="">--Select--</option>
+                            <option value="Instagram">Instagram</option>
+                            <option value="Facebook">Facebook</option>
+                            <option value="Indiamart">Indiamart</option>
+                            <option value="Google">Google</option>
+                            <option value="Reference">Reference</option>
+                            <option value="Other">Other</option>
+                        </select><br>
+
+                        <div id="other_source_field" style="display:none;">
+                            <label>Other Source:</label>
+                            <input class="form-control" type="text" name="source_other"><br>
+                        </div>
+
+                        <label><input type="checkbox" id="show_products" onchange="toggleProducts()"> Products</label>
+                        <label><input type="checkbox" id="show_services" onchange="toggleServices()">
+                            Services</label><br>
+
+                        <div id="product_list" style="display:none;">
+                            <p><strong>Choose Products:</strong></p>
+                            {% for product in products %}
+                            <label><input type="checkbox" name="products" value="{{ product.id }}"> {{ product.name
+                                }}</label><br>
+                            {% endfor %}
+                        </div>
+
+                        <div id="service_list" style="display:none;">
+                            <p><strong>Choose Services:</strong></p>
+                            {% for service in services %}
+                            <label><input type="checkbox" name="services" value="{{ service.id }}"> {{ service.name
+                                }}</label><br>
+                            {% endfor %}
+                        </div>
+
+                        <input class="form-control" type="hidden" name="requirements" id="requirements">
+
+                        <button type="submit" class="submit-buttons mb-5">Submit</button>
+                        <!-- From Uiverse.io by Jedi-hongbin -->
+                        <div class="row mb-3" style="display: flex;      align-items: center; justify-content: center;
+">
+
+                            <button class="buttonback mr-5 ">
+                                <svg height="16" width="16" xmlns="http://www.w3.org/2000/svg" version="1.1"
+                                    viewBox="0 0 1024 1024">
+                                    <path
+                                        d="M874.690416 495.52477c0 11.2973-9.168824 20.466124-20.466124 20.466124l-604.773963 0 188.083679 188.083679c7.992021 7.992021 7.992021 20.947078 0 28.939099-4.001127 3.990894-9.240455 5.996574-14.46955 5.996574-5.239328 0-10.478655-1.995447-14.479783-5.996574l-223.00912-223.00912c-3.837398-3.837398-5.996574-9.046027-5.996574-14.46955 0-5.433756 2.159176-10.632151 5.996574-14.46955l223.019353-223.029586c7.992021-7.992021 20.957311-7.992021 28.949332 0 7.992021 8.002254 7.992021 20.957311 0 28.949332l-188.073446 188.073446 604.753497 0C865.521592 475.058646 874.690416 484.217237 874.690416 495.52477z">
+                                    </path>
+                                </svg>
+                                <span>Back</span>
+                            </button>
+
+                            <button class="buttonback ">
+                                <span>Home</span>
+                            </button>
+
+                        </div>
+                    </form>
+                    {% if errors %}
+                    <div class="error">
+                        <ul>
+                            {% for field, msg in errors.items %}
+                            <li>{{ field }}: {{ msg }}</li>
+                            {% endfor %}
+                        </ul>
                     </div>
-                
-                    <label><input type="checkbox" id="show_products" onchange="toggleProducts()"> Products</label>
-                    <label><input type="checkbox" id="show_services" onchange="toggleServices()"> Services</label><br>
-                
-                    <div id="product_list" style="display:none;">
-                        <p><strong>Choose Products:</strong></p>
-                        {% for product in products %}
-                            <label><input type="checkbox" name="products" value="{{ product.id }}"> {{ product.name }}</label><br>
-                        {% endfor %}
-                    </div>
-                
-                    <div id="service_list" style="display:none;">
-                        <p><strong>Choose Services:</strong></p>
-                        {% for service in services %}
-                            <label><input type="checkbox" name="services" value="{{ service.id }}"> {{ service.name }}</label><br>
-                        {% endfor %}
-                    </div>
-                
-                    <input class="form-control" type="hidden" name="requirements" id="requirements">
-                
-                    <button type="submit" class="submit-buttons mb-5">Submit</button>
-                </form>
-                {% if errors %}
-        <div class="error">
-            <ul>
-            {% for field, msg in errors.items %}
-                <li>{{ field }}: {{ msg }}</li>
-            {% endfor %}
-            </ul>
-        </div>
-    {% endif %}
-    
+                    {% endif %}
+
+                </div>
+                <div class="col-md-3"></div>
             </div>
-            <div class="col-md-3"></div>
         </div>
     </div>
-</div>
     <script>
         function toggleProducts() {
             document.getElementById("product_list").style.display =
@@ -180,4 +215,5 @@
     {%include 'footer.html'%}
 
 </body>
+
 </html>
