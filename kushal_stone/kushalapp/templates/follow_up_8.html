@@ -1,26 +1,153 @@
 <!DOCTYPE html>
-<html>
-<head><title>Follow Up 8</title></head>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Fourth Follow-up</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #eef2f3;
+      margin: 0;
+      padding: 0;
+    }
+
+    form {
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 30px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    }
+
+    h3 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #333;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      color: #444;
+    }
+
+    select,
+    textarea,
+    input[type="date"],
+    input[type="text"] {
+      width: 100%;
+      padding: 8px 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    .radio-group {
+      margin-top: 10px;
+    }
+
+    .radio-group label {
+      font-weight: normal;
+      margin-right: 20px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    button {
+      margin-top: 25px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .submit-btn {
+      background-color: #007bff;
+      color: #fff;
+      width: 100%;
+    }
+
+    .submit-btn:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
 <body>
-<h2>Follow Up 8 for {{ lead.full_name }}</h2>
-<form method="POST">
+
+  <form method="post">
     {% csrf_token %}
-    <label>Ninth Follow-Up Date:</label>
-    <input type="date" name="ninth_followup_date"><br>
+    <h3>Fourth Follow-up for {{ lead.full_name }}</h3>
 
-    <label>Ninth Follow-Up Person ID:</label>
-    <input type="number" name="ninth_followup_person"><br>
+    <label for="lead_type">Type of Lead</label>
+    <select name="lead_type" id="lead_type" required>
+      <option value="Hot">Hot</option>
+      <option value="Warm">Warm</option>
+      <option value="Cold">Cold</option>
+      <option value="Not Interested">Not Interested</option>
+    </select>
 
-    <label>Lead Type:</label>
-    <input type="text" name="lead_type"><br>
+    <label for="remarks">Remarks</label>
+    <textarea name="remarks" id="remarks" rows="4" required></textarea>
 
-    <label>Remarks:</label>
-    <textarea name="remarks"></textarea><br>
+    <label>Do you want to close this lead?</label>
+    <div class="radio-group">
+      <label><input type="radio" name="close_lead" value="yes" id="close_yes" onclick="toggleFollowupFields()"> Yes</label>
+      <label><input type="radio" name="close_lead" value="no" checked onclick="toggleFollowupFields()"> No</label>
+    </div>
 
-    <label>Close Lead:</label>
-    <input type="checkbox" name="close_status" value="on"><br>
+    <div id="win_loss_section" class="hidden">
+      <label>Outcome if closed:</label>
+      <div class="radio-group">
+        <label><input type="radio" name="win_status" value="win"> Win</label>
+        <label><input type="radio" name="win_status" value="lose"> Loss</label>
+      </div>
+    </div>
 
-    <button type="submit">Submit</button>
-</form>
+    <div id="followup_fields">
+      <label for="next_followup_date">Next Follow-up Date</label>
+      <input type="date" name="next_followup_date" id="next_followup_date">
+
+      <label for="next_followup_person">Assign to</label>
+      <select name="next_followup_person" id="next_followup_person">
+        <option value="">-- Select Sales Person --</option>
+        {% for person in sales_persons %}
+          <option value="{{ person.id }}">{{ person.username }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <button type="submit" class="submit-btn">Submit Follow-up</button>
+  </form>
+
+  <script>
+    function toggleFollowupFields() {
+      const closeYes = document.getElementById('close_yes').checked;
+      document.getElementById('followup_fields').style.display = closeYes ? 'none' : 'block';
+      document.getElementById('win_loss_section').style.display = closeYes ? 'block' : 'none';
+    }
+
+    window.onload = function () {
+      const today = new Date();
+      const oneDayBefore = new Date(today);
+      oneDayBefore.setDate(today.getDate() - 0);
+      const minDate = oneDayBefore.toISOString().split('T')[0];
+
+      const dateInput = document.getElementById("next_followup_date");
+      dateInput.setAttribute("min", minDate);
+
+      toggleFollowupFields(); // Set initial visibility on page load
+    }
+  </script>
+
 </body>
 </html>

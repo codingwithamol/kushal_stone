@@ -305,10 +305,6 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from .models import Lead
 
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
-from .models import Lead
-
 @login_required
 def my_work(request):
     user = request.user
@@ -350,13 +346,61 @@ def my_work(request):
                 status = {'label': '4th Follow Up', 'url_name': 'follow_up_4'}
                 assigned_to_user = True
 
-        # Lead Closed
-        else:
+        # 5th Follow-Up
+        elif not hasattr(lead, 'followup5'):
             f4 = lead.followup4
-            followup_date = f4.next_followup_date
-            close_status = f4.close_status
+            if f4.next_followup_person == user:
+                followup_date = f4.next_followup_date
+                status = {'label': '5th Follow Up', 'url_name': 'follow_up_5'}
+                assigned_to_user = True
+
+        # 6th Follow-Up
+        elif not hasattr(lead, 'followup6'):
+            f5 = lead.followup5
+            if f5.next_followup_person == user:
+                followup_date = f5.next_followup_date
+                status = {'label': '6th Follow Up', 'url_name': 'follow_up_6'}
+                assigned_to_user = True
+
+        # 7th Follow-Up
+        elif not hasattr(lead, 'followup7'):
+            f6 = lead.followup6
+            if f6.next_followup_person == user:
+                followup_date = f6.next_followup_date
+                status = {'label': '7th Follow Up', 'url_name': 'follow_up_7'}
+                assigned_to_user = True
+
+        # 8th Follow-Up
+        elif not hasattr(lead, 'followup8'):
+            f7 = lead.followup7
+            if f7.next_followup_person == user:
+                followup_date = f7.next_followup_date
+                status = {'label': '8th Follow Up', 'url_name': 'follow_up_8'}
+                assigned_to_user = True
+
+        # 9th Follow-Up
+        elif not hasattr(lead, 'followup9'):
+            f8 = lead.followup8
+            if f8.next_followup_person == user:
+                followup_date = f8.next_followup_date
+                status = {'label': '9th Follow Up', 'url_name': 'follow_up_9'}
+                assigned_to_user = True
+
+        # 10th Follow-Up
+        elif not hasattr(lead, 'followup10'):
+            f9 = lead.followup9
+            if f9.next_followup_person == user:
+                followup_date = f9.next_followup_date
+                status = {'label': '10th Follow Up', 'url_name': 'follow_up_10'}
+                assigned_to_user = True
+
+        # Lead Closed (after 10th follow-up)
+        else:
+            f10 = lead.followup10
+            followup_date = f10.next_followup_date
+            close_status = getattr(f10, 'close_status', 'Closed')
             status = {'label': f'Closed ({close_status})', 'url_name': None}
-            # No need to assign it, just show if needed (currently skipping closed leads)
+            # Skipping adding this to lead_data unless you want to display closed leads
 
         if assigned_to_user:
             lead_data.append({
@@ -417,45 +461,64 @@ def follow_up_1(request, lead_id):
         return redirect('follow_up_2', lead_id=lead_id)
 
     if request.method == 'POST':
-        is_closing = 'close_lead' in request.POST
+        customer_visited = request.POST.get('customer_visited') == 'yes'
+        inspection_done = request.POST.get('inspection_done') == 'yes'
+        quotation_given = request.POST.get('quotation_given') == 'yes'
+        quotation_amount = request.POST.get('quotation_amount') or None
+        description = request.POST.get('description')
+        quotation_file = request.FILES.get('quotation_file')
+        lead_type = request.POST.get('lead_type')
+        close_lead = request.POST.get('close_lead')
+        win_status = request.POST.get('win_status')  # 'win' or 'loss'
 
-        followup = FollowUp1(
+        close_status = None
+        next_followup_date = None
+        next_followup_person = None
+
+        if close_lead == 'yes':
+            if win_status == 'win':
+                close_status = 'Win'
+            elif win_status == 'loss':
+                close_status = 'Loss'
+        else:
+            close_status = 'Open'
+            next_followup_date = request.POST.get('next_followup_date')
+            next_followup_person_id = request.POST.get('next_followup_person')
+            next_followup_person = CustomUser.objects.get(id=next_followup_person_id) if next_followup_person_id else None
+
+        # Create FollowUp1 record
+        FollowUp1.objects.create(
             lead=lead,
-            customer_visited=request.POST.get('customer_visited') == 'yes',
-            inspection_done=request.POST.get('inspection_done') == 'yes',
-            quotation_given=request.POST.get('quotation_given') == 'yes',
-            quotation_amount=request.POST.get('quotation_amount') or None,
-            description=request.POST.get('description'),
-            quotation_file=request.FILES.get('quotation_file'),
-            next_followup_date=None if is_closing else request.POST.get('next_followup_date'),
-            lead_type=request.POST.get('lead_type'),
+            customer_visited=customer_visited,
+            inspection_done=inspection_done,
+            quotation_given=quotation_given,
+            quotation_amount=quotation_amount,
+            description=description,
+            quotation_file=quotation_file,
+            lead_type=lead_type,
             followup_person=request.user,
+            next_followup_date=next_followup_date if close_lead != 'yes' else None,
+            next_followup_person=next_followup_person if close_lead != 'yes' else None,
+            close_status=close_status
         )
 
-        if is_closing:
+        # Update lead if it's closed
+        if close_status in ['Win', 'Loss']:
             lead.is_closed = True
-            win_status = request.POST.get("win_status")
-            if win_status == "win":
-                lead.win_status = True
-                followup.close_status = "Win"
-            elif win_status == "loss":
-                lead.win_status = False
-                followup.close_status = "Loss"
+            lead.win_status = True if close_status == 'Win' else False
+            lead.closed_by = request.user
             lead.save()
         else:
-            user_id = request.POST.get('next_followup_person')
-            if user_id:
-                next_person = CustomUser.objects.get(id=user_id)
-                followup.next_followup_person = next_person
-                lead.follow_up_person = next_person
+            # Assign next followup person
+            if next_followup_person:
+                lead.follow_up_person = next_followup_person
                 lead.save()
 
-        followup.save()
         return redirect('my_work')
 
     return render(request, 'follow_up_1.html', {
         'lead': lead,
-        'sales_persons': sales_persons,
+        'sales_persons': sales_persons
     })
 
 
@@ -476,36 +539,46 @@ def follow_up_2(request, lead_id):
     if request.method == 'POST':
         lead_type = request.POST.get('lead_type')
         remarks = request.POST.get('remarks')
-        next_followup_date = request.POST.get('next_followup_date')
-        next_followup_person_id = request.POST.get('next_followup_person')
-        next_followup_person = CustomUser.objects.get(id=next_followup_person_id) if next_followup_person_id else None
-
+        close_lead = request.POST.get('close_lead')
         win_status = request.POST.get('win_status')  # 'win' or 'lose'
+
         close_status = None
+        next_followup_date = None
+        next_followup_person = None
 
-        if win_status == 'win':
-            close_status = 'Win'
-        elif win_status == 'lose':
-            close_status = 'Loss'
+        if close_lead == 'yes':
+            # Closed lead
+            if win_status == 'win':
+                close_status = 'Win'
+            elif win_status == 'lose':
+                close_status = 'Loss'
+        else:
+            # Still open - get followup fields
+            close_status = 'Open'
+            next_followup_date = request.POST.get('next_followup_date')
+            next_followup_person_id = request.POST.get('next_followup_person')
+            next_followup_person = CustomUser.objects.get(id=next_followup_person_id) if next_followup_person_id else None
 
-        # Create FollowUp2 entry
-        followup2 = FollowUp2.objects.create(
+        # Create FollowUp3 entry
+        FollowUp2.objects.create(
             lead=lead,
             followup_person=request.user,
             lead_type=lead_type,
             remarks=remarks,
-            next_followup_date=next_followup_date,
-            next_followup_person=next_followup_person,
-            close_status=close_status if close_status else 'Open'
+            next_followup_date=next_followup_date if close_lead == 'no' else None,
+            next_followup_person=next_followup_person if close_lead == 'no' else None,
+            close_status=close_status
         )
 
-        # If closed, update lead
-        if close_status:
+        # Update lead if it's closed
+        if close_status in ['Win', 'Loss']:
             lead.is_closed = True
             lead.win_status = True if close_status == 'Win' else False
+            lead.closed_by = request.user  # <-- add this line
+
             lead.save()
 
-            return redirect('my_work')
+        return redirect('my_work')
 
     return render(request, 'follow_up_2.html', {
         'lead': lead,
@@ -513,173 +586,432 @@ def follow_up_2(request, lead_id):
     })
 
 
+
 @login_required
 def follow_up_3(request, lead_id):
     lead = get_object_or_404(Lead, id=lead_id)
     sales_persons = CustomUser.objects.filter(role='Sales')
 
-    if hasattr(lead, 'followup3'):
-        return redirect('follow_up_4', lead_id=lead_id)
-
     if request.method == 'POST':
-        followup = FollowUp3(
+        lead_type = request.POST.get('lead_type')
+        remarks = request.POST.get('remarks')
+        close_lead = request.POST.get('close_lead')
+        win_status = request.POST.get('win_status')  # 'win' or 'lose'
+
+        close_status = None
+        next_followup_date = None
+        next_followup_person = None
+
+        if close_lead == 'yes':
+            # Closed lead
+            if win_status == 'win':
+                close_status = 'Win'
+            elif win_status == 'lose':
+                close_status = 'Loss'
+        else:
+            # Still open - get followup fields
+            close_status = 'Open'
+            next_followup_date = request.POST.get('next_followup_date')
+            next_followup_person_id = request.POST.get('next_followup_person')
+            next_followup_person = CustomUser.objects.get(id=next_followup_person_id) if next_followup_person_id else None
+
+        # Create FollowUp3 entry
+        FollowUp3.objects.create(
             lead=lead,
-            fourth_followup_date=request.POST.get('fourth_followup_date'),
-            lead_type=request.POST.get('lead_type'),
-            remarks=request.POST.get('remarks'),
-            close_status=request.POST.get('close_status') or 'Open',
+            followup_person=request.user,
+            lead_type=lead_type,
+            remarks=remarks,
+            next_followup_date=next_followup_date if close_lead == 'no' else None,
+            next_followup_person=next_followup_person if close_lead == 'no' else None,
+            close_status=close_status
         )
 
-        fourth_user_id = request.POST.get('fourth_followup_person')
-        if fourth_user_id:
-            try:
-                next_user = CustomUser.objects.get(id=fourth_user_id)
-                followup.fourth_followup_person = next_user
-
-                # 🔁 Assign new person to the lead
-                lead.follow_up_person = next_user
-                lead.save()
-            except CustomUser.DoesNotExist:
-                pass  # You could also log this or return an error message
-
-        # ✅ If lead is closed, update status
-        if request.POST.get('close_status') in ['Win', 'Loss']:
+        # Update lead if it's closed
+        if close_status in ['Win', 'Loss']:
             lead.is_closed = True
-            lead.win_status = True if request.POST.get('close_status') == 'Win' else False
+            lead.win_status = True if close_status == 'Win' else False
             lead.save()
 
-        followup.save()
-
-        # Redirect based on close status
-        if followup.close_status in ['Win', 'Loss']:
-            return redirect('my_work')
-        return redirect('follow_up_4', lead_id=lead_id)
+        return redirect('my_work')
 
     return render(request, 'follow_up_3.html', {
         'lead': lead,
-        'sales_persons': sales_persons,
+        'sales_persons': sales_persons
     })
 
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from .models import Lead, FollowUp4, CustomUser  # Make sure FollowUp4 model exists
 
 @login_required
 def follow_up_4(request, lead_id):
     lead = get_object_or_404(Lead, id=lead_id)
-    if hasattr(lead, 'followup4'):
-        return redirect('follow_up_5', lead_id=lead_id)
+    sales_persons = CustomUser.objects.filter(role='Sales')
+
     if request.method == 'POST':
-        followup = FollowUp4()
-        followup.lead = lead
-        followup.fifth_followup_date = request.POST.get('fifth_followup_date')
-        followup.fifth_followup_person_id = request.POST.get('fifth_followup_person')
-        followup.lead_type = request.POST.get('lead_type')
-        followup.remarks = request.POST.get('remarks')
-        followup.close_status = request.POST.get('close_status')
-        followup.save()
-        return redirect('my_work') if followup.close_status else redirect('follow_up_5', lead_id=lead_id)
-    return render(request, 'follow_up_4.html', {'lead': lead})
+        lead_type = request.POST.get('lead_type')
+        remarks = request.POST.get('remarks')
+        close_lead = request.POST.get('close_lead')
+        win_status = request.POST.get('win_status')  # 'win' or 'lose'
+
+        close_status = None
+        next_followup_date = None
+        next_followup_person = None
+
+        if close_lead == 'yes':
+            # Closed lead
+            if win_status == 'win':
+                close_status = 'Win'
+            elif win_status == 'lose':
+                close_status = 'Loss'
+        else:
+            # Still open - get follow-up fields
+            close_status = 'Open'
+            next_followup_date = request.POST.get('next_followup_date')
+            next_followup_person_id = request.POST.get('next_followup_person')
+            next_followup_person = CustomUser.objects.get(id=next_followup_person_id) if next_followup_person_id else None
+
+        # Create FollowUp4 entry
+        FollowUp4.objects.create(
+            lead=lead,
+            followup_person=request.user,
+            lead_type=lead_type,
+            remarks=remarks,
+            next_followup_date=next_followup_date if close_lead == 'no' else None,
+            next_followup_person=next_followup_person if close_lead == 'no' else None,
+            close_status=close_status
+        )
+
+        # Update lead if it's closed
+        if close_status in ['Win', 'Loss']:
+            lead.is_closed = True
+            lead.win_status = True if close_status == 'Win' else False
+            lead.save()
+
+        return redirect('my_work')
+
+    return render(request, 'follow_up_4.html', {
+        'lead': lead,
+        'sales_persons': sales_persons
+    })
+
+
 
 @login_required
 def follow_up_5(request, lead_id):
     lead = get_object_or_404(Lead, id=lead_id)
-    if hasattr(lead, 'followup5'):
-        return redirect('follow_up_6', lead_id=lead_id)
+    sales_persons = CustomUser.objects.filter(role='Sales')
+
     if request.method == 'POST':
-        followup = FollowUp5()
-        followup.lead = lead
-        followup.sixth_followup_date = request.POST.get('sixth_followup_date')
-        followup.sixth_followup_person_id = request.POST.get('sixth_followup_person')
-        followup.lead_type = request.POST.get('lead_type')
-        followup.remarks = request.POST.get('remarks')
-        followup.close_status = request.POST.get('close_status')
-        followup.save()
-        return redirect('my_work') if followup.close_status else redirect('follow_up_6', lead_id=lead_id)
-    return render(request, 'follow_up_5.html', {'lead': lead})
+        lead_type = request.POST.get('lead_type')
+        remarks = request.POST.get('remarks')
+        close_lead = request.POST.get('close_lead')
+        win_status = request.POST.get('win_status')  # 'win' or 'lose'
+
+        close_status = None
+        next_followup_date = None
+        next_followup_person = None
+
+        if close_lead == 'yes':
+            # Closed lead
+            if win_status == 'win':
+                close_status = 'Win'
+            elif win_status == 'lose':
+                close_status = 'Loss'
+        else:
+            # Still open - get follow-up fields
+            close_status = 'Open'
+            next_followup_date = request.POST.get('next_followup_date')
+            next_followup_person_id = request.POST.get('next_followup_person')
+            next_followup_person = CustomUser.objects.get(id=next_followup_person_id) if next_followup_person_id else None
+
+        # Create FollowUp4 entry
+        FollowUp5.objects.create(
+            lead=lead,
+            followup_person=request.user,
+            lead_type=lead_type,
+            remarks=remarks,
+            next_followup_date=next_followup_date if close_lead == 'no' else None,
+            next_followup_person=next_followup_person if close_lead == 'no' else None,
+            close_status=close_status
+        )
+
+        # Update lead if it's closed
+        if close_status in ['Win', 'Loss']:
+            lead.is_closed = True
+            lead.win_status = True if close_status == 'Win' else False
+            lead.save()
+
+        return redirect('my_work')
+
+    return render(request, 'follow_up_5.html', {
+        'lead': lead,
+        'sales_persons': sales_persons
+    })
+
+
+
+
 
 @login_required
 def follow_up_6(request, lead_id):
     lead = get_object_or_404(Lead, id=lead_id)
-    if hasattr(lead, 'followup6'):
-        return redirect('follow_up_7', lead_id=lead_id)
+    sales_persons = CustomUser.objects.filter(role='Sales')
+
     if request.method == 'POST':
-        followup = FollowUp6()
-        followup.lead = lead
-        followup.seventh_followup_date = request.POST.get('seventh_followup_date')
-        followup.seventh_followup_person_id = request.POST.get('seventh_followup_person')
-        followup.lead_type = request.POST.get('lead_type')
-        followup.remarks = request.POST.get('remarks')
-        followup.close_status = request.POST.get('close_status')
-        followup.save()
-        return redirect('my_work') if followup.close_status else redirect('follow_up_7', lead_id=lead_id)
-    return render(request, 'follow_up_6.html', {'lead': lead})
+        lead_type = request.POST.get('lead_type')
+        remarks = request.POST.get('remarks')
+        close_lead = request.POST.get('close_lead')
+        win_status = request.POST.get('win_status')  # 'win' or 'lose'
+
+        close_status = None
+        next_followup_date = None
+        next_followup_person = None
+
+        if close_lead == 'yes':
+            # Closed lead
+            if win_status == 'win':
+                close_status = 'Win'
+            elif win_status == 'lose':
+                close_status = 'Loss'
+        else:
+            # Still open - get follow-up fields
+            close_status = 'Open'
+            next_followup_date = request.POST.get('next_followup_date')
+            next_followup_person_id = request.POST.get('next_followup_person')
+            next_followup_person = CustomUser.objects.get(id=next_followup_person_id) if next_followup_person_id else None
+
+        # Create FollowUp4 entry
+        FollowUp6.objects.create(
+            lead=lead,
+            followup_person=request.user,
+            lead_type=lead_type,
+            remarks=remarks,
+            next_followup_date=next_followup_date if close_lead == 'no' else None,
+            next_followup_person=next_followup_person if close_lead == 'no' else None,
+            close_status=close_status
+        )
+
+        # Update lead if it's closed
+        if close_status in ['Win', 'Loss']:
+            lead.is_closed = True
+            lead.win_status = True if close_status == 'Win' else False
+            lead.save()
+
+        return redirect('my_work')
+
+    return render(request, 'follow_up_6.html', {
+        'lead': lead,
+        'sales_persons': sales_persons
+    })
+
 
 @login_required
 def follow_up_7(request, lead_id):
     lead = get_object_or_404(Lead, id=lead_id)
-    if hasattr(lead, 'followup7'):
-        return redirect('follow_up_8', lead_id=lead_id)
+    sales_persons = CustomUser.objects.filter(role='Sales')
+
     if request.method == 'POST':
-        followup = FollowUp7()
-        followup.lead = lead
-        followup.eighth_followup_date = request.POST.get('eighth_followup_date')
-        followup.eighth_followup_person_id = request.POST.get('eighth_followup_person')
-        followup.lead_type = request.POST.get('lead_type')
-        followup.remarks = request.POST.get('remarks')
-        followup.close_status = request.POST.get('close_status')
-        followup.save()
-        return redirect('my_work') if followup.close_status else redirect('follow_up_8', lead_id=lead_id)
-    return render(request, 'follow_up_7.html', {'lead': lead})
+        lead_type = request.POST.get('lead_type')
+        remarks = request.POST.get('remarks')
+        close_lead = request.POST.get('close_lead')
+        win_status = request.POST.get('win_status')  # 'win' or 'lose'
+
+        close_status = None
+        next_followup_date = None
+        next_followup_person = None
+
+        if close_lead == 'yes':
+            # Closed lead
+            if win_status == 'win':
+                close_status = 'Win'
+            elif win_status == 'lose':
+                close_status = 'Loss'
+        else:
+            # Still open - get follow-up fields
+            close_status = 'Open'
+            next_followup_date = request.POST.get('next_followup_date')
+            next_followup_person_id = request.POST.get('next_followup_person')
+            next_followup_person = CustomUser.objects.get(id=next_followup_person_id) if next_followup_person_id else None
+
+        # Create FollowUp4 entry
+        FollowUp7.objects.create(
+            lead=lead,
+            followup_person=request.user,
+            lead_type=lead_type,
+            remarks=remarks,
+            next_followup_date=next_followup_date if close_lead == 'no' else None,
+            next_followup_person=next_followup_person if close_lead == 'no' else None,
+            close_status=close_status
+        )
+
+        # Update lead if it's closed
+        if close_status in ['Win', 'Loss']:
+            lead.is_closed = True
+            lead.win_status = True if close_status == 'Win' else False
+            lead.save()
+
+        return redirect('my_work')
+
+    return render(request, 'follow_up_7.html', {
+        'lead': lead,
+        'sales_persons': sales_persons
+    })
+
 
 @login_required
 def follow_up_8(request, lead_id):
     lead = get_object_or_404(Lead, id=lead_id)
-    if hasattr(lead, 'followup8'):
-        return redirect('follow_up_9', lead_id=lead_id)
+    sales_persons = CustomUser.objects.filter(role='Sales')
+
     if request.method == 'POST':
-        followup = FollowUp8()
-        followup.lead = lead
-        followup.ninth_followup_date = request.POST.get('ninth_followup_date')
-        followup.ninth_followup_person_id = request.POST.get('ninth_followup_person')
-        followup.lead_type = request.POST.get('lead_type')
-        followup.remarks = request.POST.get('remarks')
-        followup.close_status = request.POST.get('close_status')
-        followup.save()
-        return redirect('my_work') if followup.close_status else redirect('follow_up_9', lead_id=lead_id)
-    return render(request, 'follow_up_8.html', {'lead': lead})
+        lead_type = request.POST.get('lead_type')
+        remarks = request.POST.get('remarks')
+        close_lead = request.POST.get('close_lead')
+        win_status = request.POST.get('win_status')  # 'win' or 'lose'
+
+        close_status = None
+        next_followup_date = None
+        next_followup_person = None
+
+        if close_lead == 'yes':
+            # Closed lead
+            if win_status == 'win':
+                close_status = 'Win'
+            elif win_status == 'lose':
+                close_status = 'Loss'
+        else:
+            # Still open - get follow-up fields
+            close_status = 'Open'
+            next_followup_date = request.POST.get('next_followup_date')
+            next_followup_person_id = request.POST.get('next_followup_person')
+            next_followup_person = CustomUser.objects.get(id=next_followup_person_id) if next_followup_person_id else None
+
+        # Create FollowUp4 entry
+        FollowUp8.objects.create(
+            lead=lead,
+            followup_person=request.user,
+            lead_type=lead_type,
+            remarks=remarks,
+            next_followup_date=next_followup_date if close_lead == 'no' else None,
+            next_followup_person=next_followup_person if close_lead == 'no' else None,
+            close_status=close_status
+        )
+
+        # Update lead if it's closed
+        if close_status in ['Win', 'Loss']:
+            lead.is_closed = True
+            lead.win_status = True if close_status == 'Win' else False
+            lead.save()
+
+        return redirect('my_work')
+
+    return render(request, 'follow_up_8.html', {
+        'lead': lead,
+        'sales_persons': sales_persons
+    })
+
+
 
 @login_required
 def follow_up_9(request, lead_id):
     lead = get_object_or_404(Lead, id=lead_id)
-    if hasattr(lead, 'followup9'):
-        return redirect('follow_up_10', lead_id=lead_id)
+    sales_persons = CustomUser.objects.filter(role='Sales')
+
     if request.method == 'POST':
-        followup = FollowUp9()
-        followup.lead = lead
-        followup.tenth_followup_date = request.POST.get('tenth_followup_date')
-        followup.tenth_followup_person_id = request.POST.get('tenth_followup_person')
-        followup.lead_type = request.POST.get('lead_type')
-        followup.remarks = request.POST.get('remarks')
-        followup.close_status = request.POST.get('close_status')
-        followup.save()
-        return redirect('my_work') if followup.close_status else redirect('follow_up_10', lead_id=lead_id)
-    return render(request, 'follow_up_9.html', {'lead': lead})
+        lead_type = request.POST.get('lead_type')
+        remarks = request.POST.get('remarks')
+        close_lead = request.POST.get('close_lead')
+        win_status = request.POST.get('win_status')  # 'win' or 'lose'
+
+        close_status = None
+        next_followup_date = None
+        next_followup_person = None
+
+        if close_lead == 'yes':
+            # Closed lead
+            if win_status == 'win':
+                close_status = 'Win'
+            elif win_status == 'lose':
+                close_status = 'Loss'
+        else:
+            # Still open - get follow-up fields
+            close_status = 'Open'
+            next_followup_date = request.POST.get('next_followup_date')
+            next_followup_person_id = request.POST.get('next_followup_person')
+            next_followup_person = CustomUser.objects.get(id=next_followup_person_id) if next_followup_person_id else None
+
+        # Create FollowUp4 entry
+        FollowUp9.objects.create(
+            lead=lead,
+            followup_person=request.user,
+            lead_type=lead_type,
+            remarks=remarks,
+            next_followup_date=next_followup_date if close_lead == 'no' else None,
+            next_followup_person=next_followup_person if close_lead == 'no' else None,
+            close_status=close_status
+        )
+
+        # Update lead if it's closed
+        if close_status in ['Win', 'Loss']:
+            lead.is_closed = True
+            lead.win_status = True if close_status == 'Win' else False
+            lead.save()
+
+        return redirect('my_work')
+
+    return render(request, 'follow_up_9.html', {
+        'lead': lead,
+        'sales_persons': sales_persons
+    })
+
+
 
 @login_required
 def follow_up_10(request, lead_id):
     lead = get_object_or_404(Lead, id=lead_id)
-    if hasattr(lead, 'followup10'):
-        return redirect('my_work')
-    if request.method == 'POST':
-        followup = FollowUp10()
-        followup.lead = lead
-        followup.eleventh_followup_date = request.POST.get('eleventh_followup_date')
-        followup.eleventh_followup_person_id = request.POST.get('eleventh_followup_person')
-        followup.lead_type = request.POST.get('lead_type')
-        followup.remarks = request.POST.get('remarks')
-        followup.close_status = request.POST.get('close_status')
-        followup.save()
-        return redirect('my_work')
-    return render(request, 'follow_up_10.html', {'lead': lead})
+    sales_persons = CustomUser.objects.filter(role='Sales')
 
+    if request.method == 'POST':
+        lead_type = request.POST.get('lead_type')
+        remarks = request.POST.get('remarks')
+        close_lead = request.POST.get('close_lead')
+        win_status = request.POST.get('win_status')  # 'win' or 'lose'
+
+        close_status = None
+
+        if close_lead == 'yes':
+            # Closed lead
+            if win_status == 'win':
+                close_status = 'Win'
+            elif win_status == 'lose':
+                close_status = 'Loss'
+        else:
+            # Still open
+            close_status = 'Open'
+
+        # Create FollowUp10 entry (no next follow-up fields)
+        FollowUp10.objects.create(
+            lead=lead,
+            followup_person=request.user,
+            lead_type=lead_type,
+            remarks=remarks,
+            close_status=close_status
+        )
+
+        # Update lead if it's closed
+        if close_status in ['Win', 'Loss']:
+            lead.is_closed = True
+            lead.win_status = True if close_status == 'Win' else False
+            lead.save()
+
+        return redirect('my_work')
+
+    return render(request, 'follow_up_10.html', {
+        'lead': lead,
+        'sales_persons': sales_persons
+    })
 
 from django.contrib import messages
 

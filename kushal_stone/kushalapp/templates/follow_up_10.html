@@ -113,38 +113,16 @@
       </div>
     </div>
 
-    <div id="followup_fields">
-      <label for="next_followup_date">Next Follow-up Date</label>
-      <input type="date" name="next_followup_date" id="next_followup_date">
-
-      <label for="next_followup_person">Assign to</label>
-      <select name="next_followup_person" id="next_followup_person">
-        <option value="">-- Select Sales Person --</option>
-        {% for person in sales_persons %}
-          <option value="{{ person.id }}">{{ person.username }}</option>
-        {% endfor %}
-      </select>
-    </div>
-
     <button type="submit" class="submit-btn">Submit Follow-up</button>
   </form>
 
   <script>
     function toggleFollowupFields() {
       const closeYes = document.getElementById('close_yes').checked;
-      document.getElementById('followup_fields').style.display = closeYes ? 'none' : 'block';
       document.getElementById('win_loss_section').style.display = closeYes ? 'block' : 'none';
     }
 
     window.onload = function () {
-      const today = new Date();
-      const oneDayBefore = new Date(today);
-      oneDayBefore.setDate(today.getDate() - 0);
-      const minDate = oneDayBefore.toISOString().split('T')[0];
-
-      const dateInput = document.getElementById("next_followup_date");
-      dateInput.setAttribute("min", minDate);
-
       toggleFollowupFields(); // Set initial visibility on page load
     }
   </script>

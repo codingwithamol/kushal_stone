@@ -65,7 +65,7 @@
         <th>Lead Name</th>
         <th>Mobile</th>
         <th>Email</th>
-        <th>Closed By</th>
+        <!-- <th>Closed By</th> -->
         <th>Status</th>
         <th>Enquiry Date</th>
       </tr>
@@ -76,7 +76,7 @@
           <td>{{ lead.full_name }}</td>
           <td>{{ lead.mobile_number }}</td>
           <td>{{ lead.email }}</td>
-          <td>{{ lead.sales_person.username }}</td>
+          <!-- <td>{{ lead.sales_person.username }}</td> -->
           <td>{% if lead.win_status %}<span class="btn  btn-success p-2" style="border-radius: 5px; width:150px;">Win</span>{% else %}<span class="btn  btn-danger p-2 " style="border-radius: 5px;  width:150px;">Loss</span>{% endif %}</td>
           <td>{{ lead.enquiry_date }}</td>
         </tr>

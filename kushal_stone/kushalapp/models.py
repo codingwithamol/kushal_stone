@@ -81,10 +81,12 @@ class Lead(models.Model):
     enquiry_date = models.DateField()
     sales_person = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='sales_person')
     customer_segment = models.CharField(max_length=50, choices=CUSTOMER_SEGMENT_CHOICES)
-    follow_up_date = models.DateField(null=False, blank=False)
+    next_followup_date = models.DateField(null=True, blank=True)
     follow_up_person = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='follow_up_person')
     is_closed = models.BooleanField(default=False)
     win_status = models.BooleanField(null=True, blank=True)  
+    closed_by = models.ForeignKey(CustomUser, null=True, blank=True, on_delete=models.SET_NULL, related_name='closed_leads')
+
     # assigned_to = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_leads')
 
 
@@ -140,32 +142,32 @@ class FollowUp3(FollowUpBase):
 
 
 class FollowUp4(FollowUpBase):
-    next_followup_date = models.DateField()
+    next_followup_date = models.DateField(null=True, blank=True)
     next_followup_person = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='followup5_person')
 
 
 class FollowUp5(FollowUpBase):
-    next_followup_date = models.DateField()
+    next_followup_date = models.DateField(null=True, blank=True)
     next_followup_person = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='followup6_person')
 
 
 class FollowUp6(FollowUpBase):
-    next_followup_date = models.DateField()
+    next_followup_date = models.DateField(null=True, blank=True)
     next_followup_person = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='followup7_person')
 
 
 class FollowUp7(FollowUpBase):
-    next_followup_date = models.DateField()
+    next_followup_date = models.DateField(null=True, blank=True)
     next_followup_person = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='followup8_person')
 
 
 class FollowUp8(FollowUpBase):
-    next_followup_date = models.DateField()
+    next_followup_date = models.DateField(null=True, blank=True)
     next_followup_person = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='followup9_person')
 
 
 class FollowUp9(FollowUpBase):
-    next_followup_date = models.DateField()
+    next_followup_date = models.DateField(null=True, blank=True)
     next_followup_person = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='followup10_person')
 
 

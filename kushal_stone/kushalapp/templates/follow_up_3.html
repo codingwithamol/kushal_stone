@@ -1,42 +1,162 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Follow Up 3</title>
+  <meta charset="UTF-8">
+  <title>Second Follow-up</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #eef2f3;
+      margin: 0;
+      padding: 0;
+    }
+
+    form {
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 30px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    }
+
+    h3 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #333;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      color: #444;
+    }
+
+    select,
+    textarea,
+    input[type="date"],
+    input[type="text"] {
+      width: 100%;
+      padding: 8px 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    .radio-group {
+      margin-top: 10px;
+    }
+
+    .radio-group label {
+      font-weight: normal;
+      margin-right: 20px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    button {
+      margin-top: 25px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .submit-btn {
+      background-color: #007bff;
+      color: #fff;
+      width: 100%;
+    }
+
+    .submit-btn:hover {
+      background-color: #0056b3;
+    }
+  </style>
 </head>
 <body>
-  <h2>Follow Up 3 for {{ lead.full_name }}</h2>
 
-  <form method="POST">
+  <form method="post">
     {% csrf_token %}
+    <h3>Second Follow-up for {{ lead.full_name }}</h3>
 
-    <label><strong>Fourth Follow-Up Date:</strong></label><br>
-    <input type="date" name="fourth_followup_date" required><br><br>
+    <label for="lead_type">Type of Lead</label>
+    <select name="lead_type" id="lead_type" required>
+      <option value="Hot" {% if lead.lead_type == 'Hot' %}selected{% endif %}>Hot</option>
+      <option value="Warm" {% if lead.lead_type == 'Warm' %}selected{% endif %}>Warm</option>
+      <option value="Cold" {% if lead.lead_type == 'Cold' %}selected{% endif %}>Cold</option>
+      <option value="Not Interested" {% if lead.lead_type == 'Not Interested' %}selected{% endif %}>Not Interested</option>
+    </select>
 
-    <label><strong>Assign Fourth Follow-Up To:</strong></label><br>
-    <select name="fourth_followup_person" required>
-      <option value="" disabled selected>Select Sales Person</option>
-      {% for person in sales_persons %}
-        <option value="{{ person.id }}">{{ person.username }}</option>
-      {% endfor %}
-    </select><br><br>
+    <label for="remarks">Remarks</label>
+    <textarea name="remarks" id="remarks" rows="4" required></textarea>
 
-    <label><strong>Type of Lead:</strong></label><br>
-    <select name="lead_type" required>
-      <option value="Hot">Hot</option>
-      <option value="Warm">Warm</option>
-      <option value="Cold">Cold</option>
-      <option value="Not Interested">Not Interested</option>
-    </select><br><br>
+    <label>Do you want to close this lead?</label>
+    <div class="radio-group">
+      <label><input type="radio" name="close_lead" value="yes" onclick="toggleFields(true)"> Yes</label>
+      <label><input type="radio" name="close_lead" value="no" onclick="toggleFields(false)" checked> No</label>
+    </div>
 
-    <label><strong>Remarks:</strong></label><br>
-    <textarea name="remarks" rows="4" cols="50" required></textarea><br><br>
+    <div id="win_loss_section" class="hidden">
+      <label>Outcome:</label>
+      <div class="radio-group">
+        <label><input type="radio" name="win_status" value="win"> Win</label>
+        <label><input type="radio" name="win_status" value="lose"> Loss</label>
+      </div>
+    </div>
 
-    <label><strong>Close Lead:</strong></label><br>
-    <input type="radio" name="close_status" value="Win"> Win<br>
-    <input type="radio" name="close_status" value="Loss"> Loss<br>
-    <input type="radio" name="close_status" value="Open" checked> Keep Open<br><br>
+    <div id="next_followup_section">
+      <label for="next_followup_date">Next Follow-Up Date</label>
+      <input type="date" name="next_followup_date" id="next_followup_date">
 
-    <button type="submit" style="padding: 6px 15px;">Submit</button>
+      <label for="next_followup_person">Reassign Lead To</label>
+      <select name="next_followup_person" id="next_followup_person">
+        <option value="" disabled selected>Select Sales Person</option>
+        {% for person in sales_persons %}
+          <option value="{{ person.id }}">{{ person.username }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <button type="submit" class="submit-btn">Submit</button>
   </form>
+
+  <script>
+    function toggleFields(isClosed) {
+      const winLossSection = document.getElementById('win_loss_section');
+      const nextFollowUpSection = document.getElementById('next_followup_section');
+
+      if (isClosed) {
+        winLossSection.classList.remove('hidden');
+        nextFollowUpSection.classList.add('hidden');
+      } else {
+        winLossSection.classList.add('hidden');
+        nextFollowUpSection.classList.remove('hidden');
+      }
+    }
+
+
+
+    window.onload = function () {
+      const today = new Date();
+      const oneDayBefore = new Date(today);
+      oneDayBefore.setDate(today.getDate() - 0);
+      const minDate = oneDayBefore.toISOString().split('T')[0];
+
+      const dateInput = document.getElementById("next_followup_date");
+      dateInput.setAttribute("min", minDate);
+
+      toggleFollowupFields(); // Set initial visibility on page load
+    }
+  </script>
+
 </body>
 </html>
