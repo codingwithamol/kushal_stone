@@ -508,16 +508,7 @@ padding-top:40px ;
       top: 25px;
     }
 
-    h3 {
-      background: linear-gradient(to right, #2575fc, #6a11cb);
-      /* Gradient definition */
-      -webkit-background-clip: text;
-      /* Clip the gradient to the text boundaries */
-      -webkit-text-fill-color: transparent;
-      border-bottom: 1px solid rgb(80, 16, 177);
-      /*Script MT */
-      font-weight: 400;
-    }
+  
 
     .submit-buttons {
       width: 100%;
@@ -764,9 +755,15 @@ padding-top:40px ;
       text-decoration: none;
       color: black;
       /* Default text color in light mode */
-      transition: 1s;
+      transition: 0.7s;
     }
-
+    .scroll-instruction {
+      text-align: center;
+      font-size: 16px;
+      color: #333;
+      margin: 10px;
+      font-weight: bold;
+  }
     .sidebar .anac:hover {
       background: #ddd;
       color: black;
@@ -904,13 +901,50 @@ padding-top:40px ;
     }
 
     .dark-mode .main {
-      background: #767676;
+      background: #2b2a2a;
       /* Dark background */
       color: white;
 
     }
+    .dark-mode .buttonback {
+      background: #767676;
+      color: white;
+    }
+    
+    .card{
+      transition: background 0.3s, color 0.3s;
+
+    }
+    .dark-mode .card {
+      background: #767676;
+      /* Dark background */
+      color: white !important;
+      box-shadow: 0px 0px 10px rgb(255, 255, 255);
 
 
+    }
+    .heading{
+      transition: background 0.3s, color 0.3s;
+      background: linear-gradient(to right, #95afdb, #a778da);
+      /* Gradient definition */
+      -webkit-background-clip: text;
+      /* Clip the gradient to the text boundaries */
+      -webkit-text-fill-color: transparent;
+      border-bottom: 1px solid rgb(80, 16, 177);
+      /*Script MT */
+      font-weight: 400;
+
+    }
+    .dark-mode .heading {
+      background: linear-gradient(to right, #ffffff, #e7d0ff);
+      /* Gradient definition */
+      -webkit-background-clip: text;
+      /* Clip the gradient to the text boundaries */
+      -webkit-text-fill-color: transparent;
+      border-bottom: 1px solid rgb(235, 232, 241)
+ 
+
+    }
 
     .submenu {
       display: none;
@@ -1195,6 +1229,9 @@ top: 45px;
  cursor: pointer;
  border: none;
  background: #fff;
+ transition: background 0.3s, color 0.3s;
+ margin-left: 20px;
+
 }
 
 .buttonback > svg {
@@ -1212,6 +1249,10 @@ top: 45px;
 .buttonback:hover {
  box-shadow: 9px 9px 33px #d1d1d1, -9px -9px 33px #ffffff;
  transform: translateY(-2px);
+}
+a{
+  text-decoration: none;
+  color: black;
 }
   </style>
   <link rel='stylesheet' href='https://unpkg.com/aos@2.3.0/dist/aos.css'>
@@ -1304,7 +1345,7 @@ top: 45px;
         <img src="{% static 'images/Logo.webp' %}" alt="Logo">
       </div> -->
       <ul class="ull" >
-        <a class="anac" href="#" style="text-decoration: none;">
+        <a class="anac" href="{% url 'sales_dashboard' %}" style="text-decoration: none;">
           <li>
             <i class="fas fa-home"></i>Sales Dashboard
           </li>
