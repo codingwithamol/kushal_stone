@@ -45,59 +45,211 @@
     </div>
   </div>
 
-  <!-- Chart -->
-  <div class="row mt-5 mb-5">
-    <div class="col-md-8 offset-md-2">
-      <div class="card shadow p-4">
-        <h5 class="text-center mb-4">Lead Type Distribution</h5>
-        <div class="chart-container">
-          <canvas id="leadTypeChart"></canvas>
-        </div>
+  <div class="row">
+    
+    <!-- <div class="col-md-6">
+      <div class="card p-3">
+        <h5>Lead Type</h5>
+        <canvas id="leadTypeChart"></canvas>
+      </div>
+    </div> --> 
+  
+
+
+
+    <div class="col-md-6 mt-4">
+      <div class="card p-3">
+        <h5>Customer Segment</h5>
+        <canvas id="customerSegmentChart"></canvas>
       </div>
     </div>
-  </div>
-</div></div>
+  
+    <div class="col-md-6 mt-4">
+      <div class="card p-3">
+        <h5>Lead Source</h5>
+        <canvas id="sourceChart"></canvas>
+      </div>
+    </div>
 
-<!-- Chart script -->
+    <div class="col-md-7">
+      <div class="card p-3">
+        <h5>Win/Loss</h5>
+        <canvas id="winLossChart"></canvas>
+      </div>
+    </div>
+  
+  </div>
+
 <script>
-  const ctx = document.getElementById('leadTypeChart').getContext('2d');
-  new Chart(ctx, {
+  // // Lead Type Chart
+  // const leadTypeCtx = document.getElementById('leadTypeChart').getContext('2d');
+  // new Chart(leadTypeCtx, {
+  //   type: 'bar',
+  //   data: {
+  //     labels: {{ lead_type_labels|safe }},
+  //     datasets: [{
+  //       label: 'Lead Type',
+  //       data: {{ lead_type_counts|safe }},
+  //       backgroundColor: ['#ff6384', '#36a2eb', '#ffce56', '#4bc0c0'],
+  //       borderColor: '#fff',
+  //       borderWidth: 1
+  //     }]
+  //   },
+  //   options: {
+  //     responsive: true,
+  //     scales: {
+  //       x: {
+  //         beginAtZero: true,
+  //         ticks: {
+  //           stepSize: 1 // Ensure whole numbers without decimals
+  //         }
+  //       },
+  //       y: {
+  //         beginAtZero: true,
+  //         ticks: {
+  //           stepSize: 1 // Ensure whole numbers without decimals
+  //         }
+  //       }
+  //     }
+  //   }
+  // });
+
+  // Win/Loss Chart
+  const winLossCtx = document.getElementById('winLossChart').getContext('2d');
+  new Chart(winLossCtx, {
     type: 'bar',
     data: {
-      labels: {{ lead_type_labels|safe }},
+      labels: {{ win_loss_labels|safe }},
       datasets: [{
-        label: 'Lead Types',
-        data: {{ lead_type_counts|safe }},
-        backgroundColor: ['#FF6B6B', '#4D96FF', '#FFD93D', '#6BCB77'],
-        borderRadius: 10,
-        barThickness: 40
+        label: 'Win/Loss',
+        data: {{ win_loss_counts|safe }},
+        backgroundColor: ['#28a745', '#dc3545'],
+        borderColor: '#fff',
+        borderWidth: 1
       }]
     },
     options: {
       responsive: true,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          backgroundColor: '#fff',
-          titleColor: '#000',
-          bodyColor: '#000',
-          borderColor: '#ccc',
-          borderWidth: 1
-        }
-      },
+      indexAxis: 'y', // Horizontal bar chart
       scales: {
         x: {
-          ticks: { font: { size: 14 } },
-          grid: { display: false }
+          beginAtZero: true,
+          ticks: {
+            stepSize: 1 // Ensure whole numbers without decimals
+          }
         },
         y: {
           beginAtZero: true,
-          ticks: { stepSize: 1 },
-          grid: { color: '#eee' }
+          ticks: {
+            stepSize: 1 // Ensure whole numbers without decimals
+          }
         }
       }
     }
   });
+
+  // Customer Segment Chart
+  const customerSegmentCtx = document.getElementById('customerSegmentChart').getContext('2d');
+  new Chart(customerSegmentCtx, {
+    type: 'bar',
+    data: {
+      labels: {{ customer_segment_labels|safe }},
+      datasets: [{
+        label: 'Customer Segments',
+        data: {{ customer_segment_counts|safe }},
+        backgroundColor: ['#17a2b8', '#ffc107', '#fd7e14', '#6610f2'],
+        borderColor: '#fff',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        x: {
+          beginAtZero: true,
+          ticks: {
+            stepSize: 1 // Ensure whole numbers without decimals
+          }
+        },
+        y: {
+          beginAtZero: true,
+          ticks: {
+            stepSize: 1 // Ensure whole numbers without decimals
+          }
+        }
+      }
+    }
+  });
+
+  // Lead Source Chart
+  const sourceCtx = document.getElementById('sourceChart').getContext('2d');
+
+// Instagram Gradient
+const instagramGradient = sourceCtx.createLinearGradient(0, 0, 0, 400);
+instagramGradient.addColorStop(0, '#F58529');   // Orange-Red
+instagramGradient.addColorStop(0.5, '#DD2A7B'); // Pink
+instagramGradient.addColorStop(1, '#8134AF');   // Purple
+
+// Google Gradient
+const googleGradient = sourceCtx.createLinearGradient(0, 0, 0, 400);
+googleGradient.addColorStop(0, '#EA4335'); // Blueberry
+googleGradient.addColorStop(0.20, '#4285F4'); // Cinnabar
+googleGradient.addColorStop(0.40, '#4285F4'); // Cinnabar
+googleGradient.addColorStop(0.60, '#FBBC05'); // Yellow
+googleGradient.addColorStop(0.80, '#EA4335'); // Yellow
+googleGradient.addColorStop(1, '#FBBC05'); // Sea Green
+
+const sourceLabels = {{ source_labels|safe }};
+const sourceCounts = {{ source_counts|safe }};
+
+// Map sources to specific gradients or colors
+const sourceColorsMap = {
+  'Instagram': instagramGradient,
+  'Facebook': '#1877F2',
+  'Indiamart': '#8A1538',
+  'Reference': '#28a745',
+  'Google': googleGradient,
+  'Other': '#000000'
+};
+
+// Generate background colors based on labels
+const backgroundColors = sourceLabels.map(label => sourceColorsMap[label] || '#6c757d'); // fallback gray
+
+new Chart(sourceCtx, {
+  type: 'bar',
+  data: {
+    labels: sourceLabels,
+    datasets: [{
+      label: 'Lead Sources',
+      data: sourceCounts,
+      backgroundColor: backgroundColors,
+      borderColor: '#fff',
+      borderWidth: 1
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: {
+        display: false
+      }
+    },
+    scales: {
+      x: {
+        beginAtZero: true,
+        ticks: {
+          stepSize: 1
+        }
+      },
+      y: {
+        beginAtZero: true,
+        ticks: {
+          stepSize: 1
+        }
+      }
+    }
+  }
+});
 </script>
 
 {% include 'footer.html' %}

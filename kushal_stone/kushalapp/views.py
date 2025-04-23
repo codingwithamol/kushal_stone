@@ -62,44 +62,84 @@ def admin_dashboard(request):
     return render(request, 'admin_dashboard.html')
 
 
+
+
+
+
+
+
+
+# def get_latest_followup_type(lead):
+#     for model in [FollowUp10, FollowUp9, FollowUp8, FollowUp7, FollowUp6, FollowUp5, FollowUp4, FollowUp3, FollowUp2, FollowUp1]:
+#         followup = model.objects.filter(lead=lead).first()
+#         if followup:
+#             return followup.lead_type, followup.close_status
+#     return None, None
+
+
+
+
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
 from .models import Lead
-from .models import FollowUp1, FollowUp2, FollowUp3, FollowUp4 , FollowUp5, FollowUp6 , FollowUp7 , FollowUp8 , FollowUp9 , FollowUp10 , FollowUpBase
+from .models import (
+    FollowUp1, FollowUp2, FollowUp3, FollowUp4,
+    FollowUp5, FollowUp6, FollowUp7, FollowUp8,
+    FollowUp9, FollowUp10, FollowUpBase
+)
 
 @login_required
 def sales_dashboard(request):
-    user = request.user
-
     total_leads = Lead.objects.count()
-    completed_leads = Lead.objects.filter(follow_up_person=user,is_closed=True).count()
-    my_work_total = Lead.objects.filter(follow_up_person=user, is_closed=False).count()
+    completed_leads = Lead.objects.filter(is_closed=True).count()
+    my_work_total = Lead.objects.filter(sales_person=request.user).count()
 
-    # Initialize lead type data
-    lead_types = ['Hot', 'Warm', 'Cold', 'Not Interested']
-    lead_type_data = {lt: 0 for lt in lead_types}
+    # Get selected follow-up model based on query param
+    follow_up_type = request.GET.get('follow_up_type', 'FollowUp1')
+    follow_up_model = globals().get(follow_up_type, FollowUp1)
 
-    for model in [FollowUp1, FollowUp2, FollowUp3, FollowUp4]:
-        qs = model.objects.values('lead_type').annotate(count=Count('id'))
-        for entry in qs:
-            lead_type = entry['lead_type']
-            if lead_type in lead_type_data:
-                lead_type_data[lead_type] += entry['count']
+    # Lead type counts from selected follow-up
+    # lead_types = follow_up_model.objects.values('lead_type').annotate(count=Count('lead_type'))
+    # lead_type_labels = [entry['lead_type'] for entry in lead_types]
+    # lead_type_counts = [entry['count'] for entry in lead_types]
 
-    # Prepare lists for chart
-    lead_type_labels = list(lead_type_data.keys())
-    lead_type_counts = list(lead_type_data.values())
+    # Win/Loss Status
+    win_loss = Lead.objects.filter(is_closed=True).values('win_status').annotate(count=Count('win_status'))
+    win_loss_labels = ['Win' if entry['win_status'] else 'Loss' for entry in win_loss]
+    win_loss_counts = [entry['count'] for entry in win_loss]
+
+    # Customer Segment
+    customer_segments = Lead.objects.values('customer_segment').annotate(count=Count('customer_segment'))
+    customer_segment_labels = [entry['customer_segment'] for entry in customer_segments]
+    customer_segment_counts = [entry['count'] for entry in customer_segments]
+
+    # Lead Source
+    sources = Lead.objects.values('source').annotate(count=Count('source'))
+    source_labels = [entry['source'] for entry in sources]
+    source_counts = [entry['count'] for entry in sources]
 
     context = {
         'total_leads': total_leads,
         'completed_leads': completed_leads,
         'my_work_total': my_work_total,
-        'lead_type_labels': lead_type_labels,
-        'lead_type_counts': lead_type_counts,
+        # 'lead_type_labels': lead_type_labels,
+        # 'lead_type_counts': lead_type_counts,
+        'win_loss_labels': win_loss_labels,
+        'win_loss_counts': win_loss_counts,
+        'customer_segment_labels': customer_segment_labels,
+        'customer_segment_counts': customer_segment_counts,
+        'source_labels': source_labels,
+        'source_counts': source_counts,
+        'follow_up_type': follow_up_type
     }
 
     return render(request, 'sales_dashboard.html', context)
+
+
+
+
+
 
 @login_required
 def operations_dashboard(request):
@@ -304,6 +344,9 @@ from .models import Lead, CustomUser, FollowUp1
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from .models import Lead
+from django.utils import timezone
+from datetime import datetime, time, date
+
 
 @login_required
 def my_work(request):
@@ -408,6 +451,15 @@ def my_work(request):
                 'status': status,
                 'followup_date': followup_date
             })
+
+
+    lead_data.sort(
+        key=lambda x: (
+        datetime.combine(x['followup_date'], time.min)
+        if isinstance(x['followup_date'], date) and not isinstance(x['followup_date'], datetime)
+        else x['followup_date'] or datetime.max
+    )
+)
 
     return render(request, 'my_work.html', {'lead_data': lead_data})
 
